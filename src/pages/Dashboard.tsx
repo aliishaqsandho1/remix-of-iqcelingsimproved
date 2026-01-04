@@ -5,14 +5,15 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area } from "recharts"
-import { DollarSign, TrendingUp, Package, Users, CheckCircle, ShoppingCart, Target, CreditCard, Package2, Activity } from "lucide-react"
+import { XAxis, YAxis, CartesianGrid, Cell, BarChart, Bar, AreaChart, Area } from "recharts"
+import { DollarSign, TrendingUp, Package, Users, ShoppingCart, Target, CreditCard, Package2 } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { dashboardApi } from "@/services/api"
 import { reportsApi } from "@/services/reportsApi"
-import { Legend, ReferenceLine } from "recharts";
 import { ProfitContent } from "@/components/profit/ProfitContent";
 import { ReportsContent } from "@/components/dashboard/ReportsContent";
+import { WeeklyPerformanceChart } from "@/components/dashboard/WeeklyPerformanceChart";
+import { HighValueSalesChart } from "@/components/dashboard/HighValueSalesChart";
 function formatNumber(value) {
   const num = Number(value);
   if (isNaN(num)) return '0';
@@ -368,9 +369,9 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Charts Section - Full Width */}
-          <div className="space-y-4">
-            {/* Sales vs Target - Full Width */}
+          {/* Charts Section - Two charts per row */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Sales vs Target */}
             <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
               <CardHeader className="pb-3 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20">
                 <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -410,7 +411,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            {/* Sales by Category - Full Width */}
+            {/* Sales by Category */}
             <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
               <CardHeader className="pb-3 bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-950/30 dark:to-emerald-900/30">
                 <CardTitle className="flex items-center gap-3 text-lg font-bold tracking-tight">
@@ -422,7 +423,7 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6">
-                <ChartContainer config={categoryChartConfig} className="h-[350px] w-full">
+                <ChartContainer config={categoryChartConfig} className="h-[300px] w-full">
                   <BarChart
                     data={formattedCategoryData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
@@ -479,58 +480,11 @@ export default function Dashboard() {
                 </ChartContainer>
               </CardContent>
             </Card>
-
-            {/* Weekly Performance Trend - Full Width */}
-            <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-              <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/20 dark:to-indigo-900/20">
-                <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                  <Activity className="h-5 w-5 text-indigo-600" />
-                  Weekly Performance Trend
-                </CardTitle>
-                <CardDescription className="text-sm">Revenue and orders over time</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4">
-                <ChartContainer config={salesChartConfig} className="h-[300px] w-full">
-                  <LineChart data={stats?.performance?.weeklyTrend || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" className="dark:stroke-slate-700" />
-                    <XAxis dataKey="week" tick={{ fontSize: 12, fill: 'currentColor' }} />
-                    <YAxis tick={{ fontSize: 12, fill: 'currentColor' }} tickFormatter={(value) => `Rs. ${(value / 1000).toFixed(0)}k`} />
-                    <ChartTooltip content={<ChartTooltipContent formatter={(value, name) => [`Rs. ${value.toLocaleString()}`, name === 'revenue' ? 'Revenue' : 'Orders']} />} />
-                    <Line dataKey="revenue" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }} />
-                    <Line dataKey="orders" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }} />
-                  </LineChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Recent High-Value Sales - Full Width */}
-          <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl mt-4">
-            <CardHeader className="pb-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20">
-              <CardTitle className="text-base font-semibold flex items-center gap-2 text-card-foreground">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                Recent High-Value Sales
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="grid gap-3 md:grid-cols-3">
-                {stats?.sales?.highValueSales?.slice(0, 3).map((sale, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <div>
-                      <p className="text-sm font-medium text-card-foreground">{sale.customer}</p>
-                      <p className="text-xs text-muted-foreground">#{sale.orderNumber}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-green-600 dark:text-green-400">Rs. {sale.amount.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">{sale.date}</p>
-                    </div>
-                  </div>
-                )) || (
-                    <p className="text-sm text-muted-foreground">No recent sales</p>
-                  )}
-              </div>
-            </CardContent>
-          </Card>
+          {/* New API-powered Charts */}
+          <WeeklyPerformanceChart />
+          <HighValueSalesChart />
         </TabsContent>
 
         <TabsContent value="profits" className="space-y-6">

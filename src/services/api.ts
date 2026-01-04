@@ -205,6 +205,8 @@ export const dashboardApi = {
   getCategoryPerformance: () => apiRequest<ApiResponse<any>>('/dashboard/category-performance'),
   getDailySales: () => apiRequest<ApiResponse<any>>('/dashboard/daily-sales'),
   getInventoryStatus: () => apiRequest<ApiResponse<any>>('/dashboard/inventory-status'),
+  getWeeklyPerformanceTrend: () => apiRequest<ApiResponse<any>>('/performance/weekly-trend'),
+  getHighValueSales: (limit: number = 15) => apiRequest<ApiResponse<any>>(`/sales/high-value-recent?limit=${limit}`),
 };
 
 // Products API

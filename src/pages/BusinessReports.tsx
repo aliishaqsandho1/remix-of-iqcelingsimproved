@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { productsApi, customersApi } from "@/services/api";
 import { reportsApi } from "@/services/reportsApi";
-import ProductDetailsModal from "@/components/reports/ProductDetailsModal";
+import { ProductDetailsModal } from "@/components/sales/ProductDetailsModal";
 import CustomerDetailsModal from "@/components/reports/CustomerDetailsModal";
 import {
   Package,

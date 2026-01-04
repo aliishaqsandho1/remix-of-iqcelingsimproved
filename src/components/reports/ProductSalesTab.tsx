@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, Search, TrendingUp, TrendingDown, DollarSign, Eye } from "lucide-react";
 import { MonthlyProductSale } from "@/services/reportsApi";
-import ProductDetailsModal from "@/components/reports/ProductDetailsModal";
+import { ProductDetailsModal } from "@/components/sales/ProductDetailsModal";
 
 interface ProductSalesTabProps {
   data: MonthlyProductSale[];
