@@ -14,6 +14,7 @@ import { ProfitContent } from "@/components/profit/ProfitContent";
 import { ReportsContent } from "@/components/dashboard/ReportsContent";
 import { WeeklyPerformanceChart } from "@/components/dashboard/WeeklyPerformanceChart";
 import { HighValueSalesChart } from "@/components/dashboard/HighValueSalesChart";
+import { ProductPerformanceChart } from "@/components/dashboard/ProductPerformanceChart";
 function formatNumber(value) {
   const num = Number(value);
   if (isNaN(num)) return '0';
@@ -485,6 +486,7 @@ export default function Dashboard() {
           {/* New API-powered Charts */}
           <WeeklyPerformanceChart />
           <HighValueSalesChart />
+          <ProductPerformanceChart />
         </TabsContent>
 
         <TabsContent value="profits" className="space-y-6">

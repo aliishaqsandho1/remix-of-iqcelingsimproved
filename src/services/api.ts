@@ -207,6 +207,13 @@ export const dashboardApi = {
   getInventoryStatus: () => apiRequest<ApiResponse<any>>('/dashboard/inventory-status'),
   getWeeklyPerformanceTrend: () => apiRequest<ApiResponse<any>>('/performance/weekly-trend'),
   getHighValueSales: (limit: number = 15) => apiRequest<ApiResponse<any>>(`/sales/high-value-recent?limit=${limit}`),
+  getProductPerformance: (params?: { limit?: number; period_days?: number }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.period_days) queryParams.append('period_days', params.period_days.toString());
+    const query = queryParams.toString();
+    return apiRequest<ApiResponse<any>>(`/products/performance${query ? `?${query}` : ''}`);
+  },
 };
 
 // Products API

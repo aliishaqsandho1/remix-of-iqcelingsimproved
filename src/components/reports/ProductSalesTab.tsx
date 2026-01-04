@@ -86,15 +86,15 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
   const avgMargin = filteredData.reduce((sum, p) => sum + p.profit_margin_percent, 0) / (filteredData.length || 1);
 
   const handleViewDetails = (product: MonthlyProductSale) => {
-    // Convert to the format expected by ProductDetailsModal
+    // Convert to the format expected by ProductDetailsModal - use string ID to match API format
     const productForModal = {
-      id: product.product_id,
+      id: String(product.product_id),
       name: product.product_name,
       sku: product.sku,
       category: product.category_name,
       price: parseFloat(product.current_price),
       costPrice: parseFloat(product.current_cost),
-      stock: 0, // Not available in this data
+      stock: 0,
       unit: product.unit,
       status: product.product_status,
     };
