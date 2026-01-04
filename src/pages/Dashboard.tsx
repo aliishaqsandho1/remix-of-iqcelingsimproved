@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area } from "recharts"
-import { DollarSign, TrendingUp, Package, Users, AlertTriangle, CheckCircle, ShoppingCart, Target, ArrowUpDown, Download, FileText, Calendar, CreditCard, Package2, Activity, Banknote } from "lucide-react"
+import { DollarSign, TrendingUp, Package, Users, CheckCircle, ShoppingCart, Target, CreditCard, Package2, Activity } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { dashboardApi } from "@/services/api"
 import { reportsApi } from "@/services/reportsApi"
@@ -368,10 +368,10 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Enhanced Charts Section */}
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 mb-8">
-            {/* Sales vs Target */}
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+          {/* Charts Section - Full Width */}
+          <div className="space-y-4">
+            {/* Sales vs Target - Full Width */}
+            <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
               <CardHeader className="pb-3 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20">
                 <CardTitle className="flex items-center gap-2 text-base font-semibold">
                   <Target className="h-5 w-5 text-orange-600" />
@@ -409,7 +409,9 @@ export default function Dashboard() {
                 </ChartContainer>
               </CardContent>
             </Card>
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+
+            {/* Sales by Category - Full Width */}
+            <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
               <CardHeader className="pb-3 bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-950/30 dark:to-emerald-900/30">
                 <CardTitle className="flex items-center gap-3 text-lg font-bold tracking-tight">
                   <Package className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -478,13 +480,8 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-
-
-          </div>
-
-          {/* New Analytics Section - Weekly Performance Trend */}
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+            {/* Weekly Performance Trend - Full Width */}
+            <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
               <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/20 dark:to-indigo-900/20">
                 <CardTitle className="flex items-center gap-2 text-base font-semibold">
                   <Activity className="h-5 w-5 text-indigo-600" />
@@ -505,47 +502,18 @@ export default function Dashboard() {
                 </ChartContainer>
               </CardContent>
             </Card>
-
-            {/* Fast Moving Products */}
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-              <CardHeader className="pb-3 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/20 dark:to-emerald-900/20">
-                <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                  <Package2 className="h-5 w-5 text-emerald-600" />
-                  Fast Moving Products
-                </CardTitle>
-                <CardDescription className="text-sm">Top selling products this period</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="space-y-3">
-                  {stats?.inventory?.fastMovingProducts?.slice(0, 5).map((product, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/20 dark:to-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 dark:text-gray-100">{product.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Sold: {product.sold} | Remaining: {product.remaining}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-300">
-                        #{index + 1}
-                      </Badge>
-                    </div>
-                  )) || <p className="text-center text-gray-500 py-8">No product data available</p>}
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Enhanced Information Sections */}
-          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 mt-8">
-            {/* Recent High-Value Sales */}
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-              <CardHeader className="pb-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-card-foreground">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  Recent High-Value Sales
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 p-4">
+          {/* Recent High-Value Sales - Full Width */}
+          <Card className="shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl mt-4">
+            <CardHeader className="pb-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20">
+              <CardTitle className="text-base font-semibold flex items-center gap-2 text-card-foreground">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                Recent High-Value Sales
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid gap-3 md:grid-cols-3">
                 {stats?.sales?.highValueSales?.slice(0, 3).map((sale, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                     <div>
@@ -560,75 +528,9 @@ export default function Dashboard() {
                 )) || (
                     <p className="text-sm text-muted-foreground">No recent sales</p>
                   )}
-              </CardContent>
-            </Card>
-
-            {/* Recent Payments */}
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-              <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-card-foreground">
-                  <Banknote className="h-5 w-5 text-blue-500" />
-                  Recent Payments
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 p-4">
-                {stats?.cashFlow?.recentPayments?.slice(0, 3).map((payment, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <div>
-                      <p className="text-sm font-medium text-card-foreground">{payment.customer}</p>
-                      <p className="text-xs text-muted-foreground">{payment.date}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-blue-600 dark:text-blue-400">Rs. {payment.amount.toLocaleString()}</p>
-                    </div>
-                  </div>
-                )) || (
-                    <p className="text-sm text-muted-foreground">No recent payments</p>
-                  )}
-              </CardContent>
-            </Card>
-
-            {/* System Alerts */}
-            <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-              <CardHeader className="pb-3 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-950/20 dark:to-yellow-900/20">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-card-foreground">
-                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                  System Alerts
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 p-4">
-                {stats?.inventory?.lowStockItems > 0 && (
-                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-950/20 dark:to-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                    <div>
-                      <p className="text-sm font-medium text-card-foreground">Low Stock Alert</p>
-                      <p className="text-xs text-muted-foreground">
-                        {stats.inventory.lowStockItems} items running low
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {stats?.inventory?.outOfStockItems > 0 && (
-                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                    <AlertTriangle className="h-4 w-4 text-red-500" />
-                    <div>
-                      <p className="text-sm font-medium text-card-foreground">Out of Stock</p>
-                      <p className="text-xs text-muted-foreground">
-                        {stats.inventory.outOfStockItems} items unavailable
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <div>
-                    <p className="text-sm font-medium text-card-foreground">System Operational</p>
-                    <p className="text-xs text-muted-foreground">All systems running</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="profits" className="space-y-6">

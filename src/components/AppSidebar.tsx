@@ -16,26 +16,16 @@ import {
   Package, 
   ShoppingCart, 
   Users, 
-  Warehouse, 
   DollarSign, 
   FileText,
   Settings,
   Store,
-  TrendingUp,
   Calculator,
   Truck,
-  BarChart3,
-  Calendar,
   CreditCard,
   UserCheck,
-  Database,
-  PieChart,
   ShoppingBag,
-  MessageCircle,
-  Bot,
-  User,
   Building2,
-  ScrollText
 } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -76,11 +66,6 @@ const mainItems: MenuItem[] = [
     title: "Outsourced Sales",
     url: "/outsourced-orders",
     icon: Truck,
-  },
-   {
-    title: "Ask AI",
-    url: "/reports",
-    icon: MessageCircle,
   }
 ]
 // Business Operations - removed Sales Receipts
@@ -124,25 +109,11 @@ const financeItems: MenuItem[] = [
     url: "/finances",
     icon: DollarSign,
   },
-]
-
-// Analytics & Reports
-const analyticsItems: MenuItem[] = [
-  {
-    title: "Profit Analytics",
-    url: "/profit",
-    icon: PieChart,
-  },
   {
     title: "Accounts",
     url: "/accounts",
     icon: Building2,
   },
-  {
-    title: "Audit Logs",
-    url: "/audit-logs",
-    icon: ScrollText,
-  }
 ]
 
 export function AppSidebar() {
@@ -244,14 +215,6 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-sidebar-foreground/70">Financial Management</SidebarGroupLabel>
           <SidebarGroupContent>
             {renderMenuItems(financeItems)}
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Analytics & Reports */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/70">Analytics & Reports</SidebarGroupLabel>
-          <SidebarGroupContent>
-            {renderMenuItems(analyticsItems)}
           </SidebarGroupContent>
         </SidebarGroup>
 

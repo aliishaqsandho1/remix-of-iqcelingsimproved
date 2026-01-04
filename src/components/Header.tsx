@@ -1,4 +1,4 @@
-import { ClipboardList, User, Menu, Home, ChevronRight, Maximize, Minimize } from "lucide-react";
+import { ClipboardList, User, Menu, Home, ChevronRight, Maximize, Minimize, ScrollText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -133,6 +133,17 @@ export function Header() {
             ) : (
               <Maximize className="h-4 w-4 md:h-5 md:w-5" />
             )}
+          </Button>
+
+          {/* Audit Logs Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/audit-logs')}
+            className="h-8 w-8 md:h-10 md:w-10 hover:bg-accent hover:text-accent-foreground"
+            title="Audit Logs"
+          >
+            <ScrollText className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
 
           {/* Inventory Logs Button */}
