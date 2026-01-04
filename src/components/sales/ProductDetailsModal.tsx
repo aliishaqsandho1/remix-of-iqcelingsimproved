@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Package, Calendar, DollarSign, TrendingUp, AlertTriangle, ShoppingCart, BarChart3 } from "lucide-react";
+import { User, Package, Calendar, AlertTriangle, ShoppingCart } from "lucide-react";
 import { salesApi } from "@/services/api";
 
 interface ProductDetailsModalProps {
@@ -38,14 +38,19 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
       if (response.success) {
         const allSales = response.data?.sales || response.data || [];
         
-        // Filter sales that contain this product
+        // Filter sales that contain this product - handle both string and number IDs
+        const productId = String(product.id);
         const productSales = allSales.filter((sale: any) => 
-          sale.items && sale.items.some((item: any) => item.productId === product.id)
+          sale.items && sale.items.some((item: any) => 
+            String(item.productId) === productId || String(item.product_id) === productId
+          )
         );
 
         // Extract only the relevant items and add sale info
         const relevantSales = productSales.map((sale: any) => {
-          const productItem = sale.items.find((item: any) => item.productId === product.id);
+          const productItem = sale.items.find((item: any) => 
+            String(item.productId) === productId || String(item.product_id) === productId
+          );
           return {
             ...productItem,
             saleDate: sale.saleDate || sale.createdAt,
@@ -160,81 +165,31 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
 
         <ScrollArea className="h-[calc(100vh-80px)]">
           <div className="p-6 space-y-6">
-            {/* Product Basic Info */}
-            <Card className="bg-gradient-to-br from-muted/50 to-transparent border-border/50">
-              <CardContent className="p-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">SKU</div>
-                    <div className="font-medium text-sm">{product.sku || 'N/A'}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Category</div>
-                    <div className="font-medium text-sm">{product.category || 'N/A'}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Price</div>
-                    <div className="font-medium text-sm text-emerald-600">PKR {formatCurrency(product.price)}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Stock</div>
-                    <div className="font-medium text-sm">
-                      {product.incompleteQuantity ? (
-                        <span className="text-orange-600">Unknown</span>
-                      ) : (
-                        `${product.stock || 0} ${product.unit || 'units'}`
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {product.quantityNote && (
-                  <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg">
-                    <div className="text-sm text-orange-800 dark:text-orange-200">
-                      <strong>Note:</strong> {product.quantityNote}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Sales Overview Stats */}
-            <div>
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-muted-foreground uppercase tracking-wide">
-                <BarChart3 className="h-4 w-4" />
-                Sales Overview
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <Card className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-600">{totalSold}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{product.unit || 'units'} Sold</div>
-                  </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-emerald-600">PKR {formatCurrency(totalRevenue)}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Total Revenue</div>
-                  </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-purple-600">{uniqueCustomers}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Unique Customers</div>
-                  </CardContent>
-                </Card>
-                <Card className="bg-gradient-to-br from-orange-500/10 to-transparent border-orange-500/20">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-orange-600">{salesData.length}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Total Orders</div>
-                  </CardContent>
-                </Card>
+            {/* Compact Sales Overview Stats */}
+            <div className="grid grid-cols-4 gap-2">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-blue-600">{totalSold}</div>
+                <div className="text-xs text-muted-foreground">{product.unit || 'units'} Sold</div>
               </div>
-              {mostRecentSale && (
-                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
-                  <span className="font-medium">Last Purchase:</span> {formatDate(mostRecentSale.saleDate)} by {mostRecentSale.customerName}
-                </div>
-              )}
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-emerald-600">PKR {formatCurrency(totalRevenue)}</div>
+                <div className="text-xs text-muted-foreground">Revenue</div>
+              </div>
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-purple-600">{uniqueCustomers}</div>
+                <div className="text-xs text-muted-foreground">Customers</div>
+              </div>
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-orange-600">{salesData.length}</div>
+                <div className="text-xs text-muted-foreground">Orders</div>
+              </div>
             </div>
+            
+            {mostRecentSale && (
+              <div className="p-2 bg-muted/50 rounded-lg text-xs text-muted-foreground">
+                <span className="font-medium">Last Sale:</span> {formatDate(mostRecentSale.saleDate)} by {mostRecentSale.customerName}
+              </div>
+            )}
 
             {/* Customer Purchase Summary */}
             {Object.keys(customerStats).length > 0 && (
