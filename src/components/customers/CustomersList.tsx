@@ -235,13 +235,6 @@ export const CustomersList = ({ customers, loading, onSelectCustomer, onEditCust
                   <Eye className="h-4 w-4 mr-1" />
                   Details
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onSelectCustomer(customer)}
-                >
-                  View Summary
-                </Button>
               </div>
             </div>
           </CardContent>

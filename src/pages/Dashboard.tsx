@@ -379,7 +379,7 @@ export default function Dashboard() {
                   <Target className="h-5 w-5 text-orange-600" />
                   Sales vs Target
                 </CardTitle>
-                <CardDescription className="text-sm">Daily performance comparison (Rs.)</CardDescription>
+               
               </CardHeader>
               <CardContent className="p-4">
                 <ChartContainer config={salesChartConfig} className="h-[300px] w-full">
@@ -419,9 +419,7 @@ export default function Dashboard() {
                   <Package className="h-6 w-6 text-green-600 dark:text-green-400" />
                   Sales by Category
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
-                  Revenue distribution across product categories (in Rs.)
-                </CardDescription>
+                
               </CardHeader>
               <CardContent className="p-6">
                 <ChartContainer config={categoryChartConfig} className="h-[300px] w-full">
