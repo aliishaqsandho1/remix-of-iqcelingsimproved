@@ -485,8 +485,8 @@ export default function Dashboard() {
 
           {/* New API-powered Charts */}
           <WeeklyPerformanceChart />
-          <HighValueSalesChart />
           <ProductPerformanceChart />
+          <HighValueSalesChart />
         </TabsContent>
 
         <TabsContent value="profits" className="space-y-6">

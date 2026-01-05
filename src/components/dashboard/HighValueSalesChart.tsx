@@ -120,49 +120,9 @@ export function HighValueSalesChart() {
         </div>
 
         <div className="grid lg:grid-cols-5 gap-6">
-          {/* Chart - Takes 2 columns */}
-          <div className="lg:col-span-2">
-            <p className="text-xs font-medium text-muted-foreground mb-3">Top 10 by Amount</p>
-            <div className="h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={chartData} 
-                  layout="vertical"
-                  margin={{ top: 0, right: 20, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                  <XAxis 
-                    type="number" 
-                    tickFormatter={(v) => formatCurrency(v)}
-                    tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    width={95}
-                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar 
-                    dataKey="amount" 
-                    radius={[0, 4, 4, 0]}
-                    maxBarSize={22}
-                  >
-                    {chartData.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
+          
           {/* Sales List - Takes 3 columns, 3-column grid */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-5">
             <p className="text-xs font-medium text-muted-foreground mb-3">All Sales Details</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
               {salesData.map((sale: any, index: number) => {
