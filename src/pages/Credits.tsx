@@ -597,97 +597,16 @@ const Credits = () => {
 };
 
 // Customer Dialog Component - Simplified to 3 fields only
+// Customer Dialog Component - using shared component with duplicate checking
+import { CustomerFormWithDuplicateCheck } from "@/components/customers/CustomerFormWithDuplicateCheck";
+
 const CustomerDialog = ({ onSubmit, onClose }: { onSubmit: (data: any) => void; onClose: () => void }) => {
-  const [formData, setFormData] = useState({
-    name: "", 
-    phone: "+92", 
-    initialCredit: ""
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name.trim()) {
-      return;
-    }
-    
-    if (!formData.phone.trim() || formData.phone.trim() === "+92") {
-      return;
-    }
-    
-    onSubmit({
-      name: formData.name,
-      phone: formData.phone,
-      type: "Temporary",
-      creditLimit: 0,
-      initialCredit: parseFloat(formData.initialCredit) || 0
-    });
-    setFormData({ name: "", phone: "+92", initialCredit: "" });
-  };
-
   return (
-    <DialogContent className="sm:max-w-md">
-      <DialogHeader>
-        <DialogTitle>Add New Customer</DialogTitle>
-      </DialogHeader>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="name">Customer Name *</Label>
-          <Input
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({...formData, name: e.target.value})}
-            placeholder="Enter customer name"
-            required
-            autoFocus
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="phone">Phone Number *</Label>
-          <Input
-            id="phone"
-            value={formData.phone}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (!value.startsWith("+92")) {
-                setFormData({...formData, phone: "+92"});
-              } else {
-                setFormData({...formData, phone: value});
-              }
-            }}
-            placeholder="+92XXXXXXXXXX"
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="initialCredit">Initial Credit Amount</Label>
-          <Input
-            id="initialCredit"
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.initialCredit}
-            onChange={(e) => setFormData({...formData, initialCredit: e.target.value})}
-            placeholder="Enter initial credit (optional)"
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button 
-            type="submit" 
-            className="bg-blue-600 hover:bg-blue-700"
-            disabled={!formData.name.trim() || !formData.phone.trim() || formData.phone.trim() === "+92"}
-          >
-            Add Customer
-          </Button>
-        </div>
-      </form>
-    </DialogContent>
+    <CustomerFormWithDuplicateCheck 
+      onSubmit={onSubmit} 
+      onClose={onClose}
+      showInitialCredit={true}
+    />
   );
 };
 

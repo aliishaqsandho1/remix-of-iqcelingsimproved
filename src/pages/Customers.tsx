@@ -716,139 +716,15 @@ const Customers = () => {
   );
 };
 
-// Customer Dialog Component
+// Customer Dialog Component - using shared component with duplicate checking
+import { CustomerFormWithDuplicateCheck } from "@/components/customers/CustomerFormWithDuplicateCheck";
+
 const CustomerDialog = ({ onSubmit, onClose }: { onSubmit: (data: any) => void; onClose: () => void }) => {
-  const [formData, setFormData] = useState({
-    name: "", 
-    phone: "+92", 
-    email: "", 
-    address: "", 
-    city: "",
-    type: "Permanent",
-    creditLimit: ""
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name.trim()) {
-      return;
-    }
-    
-    if (!formData.phone.trim() || formData.phone.trim() === "+92") {
-      return;
-    }
-    
-    onSubmit({
-      ...formData,
-      creditLimit: parseFloat(formData.creditLimit) || 0
-    });
-    setFormData({ 
-      name: "", phone: "+92", email: "", address: "", city: "", type: "Permanent", creditLimit: "" 
-    });
-  };
-
   return (
-    <DialogContent className="max-w-2xl">
-      <DialogHeader>
-        <DialogTitle>Add New Customer</DialogTitle>
-      </DialogHeader>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="name">Customer Name *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="phone">Phone Number *</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (!value.startsWith("+92")) {
-                  setFormData({...formData, phone: "+92"});
-                } else {
-                  setFormData({...formData, phone: value});
-                }
-              }}
-              placeholder="+92XXXXXXXXXX"
-              required
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="address">Address</Label>
-          <Textarea
-            id="address"
-            value={formData.address}
-            onChange={(e) => setFormData({...formData, address: e.target.value})}
-            rows={2}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="city">City</Label>
-            <Input
-              id="city"
-              value={formData.city}
-              onChange={(e) => setFormData({...formData, city: e.target.value})}
-            />
-          </div>
-          <div>
-            <Label htmlFor="type">Customer Type</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Temporary">Temporary</SelectItem>
-                <SelectItem value="Semi-Permanent">Semi-Permanent</SelectItem>
-                <SelectItem value="Permanent">Permanent</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="creditLimit">Credit Limit (PKR)</Label>
-          <Input
-            id="creditLimit"
-            type="number"
-            value={formData.creditLimit}
-            onChange={(e) => setFormData({...formData, creditLimit: e.target.value})}
-          />
-        </div>
-
-        <div className="flex gap-2 pt-4">
-          <Button 
-            type="submit" 
-            className="flex-1"
-            disabled={!formData.name.trim() || !formData.phone.trim() || formData.phone.trim() === "+92"}
-          >
-            Add Customer
-          </Button>
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-        </div>
-      </form>
-    </DialogContent>
+    <CustomerFormWithDuplicateCheck 
+      onSubmit={onSubmit} 
+      onClose={onClose}
+    />
   );
 };
 
