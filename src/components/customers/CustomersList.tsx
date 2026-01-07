@@ -164,9 +164,12 @@ export const CustomersList = ({ customers, loading, onSelectCustomer, onEditCust
                   <Badge className={`text-xs ${getStatusColor(customer.status)}`}>
                     {customer.status || 'active'}
                   </Badge>
-                  {(customer.currentBalance || 0) > 0 && (
-                    <Badge variant="destructive" className="text-xs">
-                      Due: PKR {customer.currentBalance?.toLocaleString()}
+                  {(customer.currentBalance || 0) !== 0 && (
+                    <Badge 
+                      variant={customer.currentBalance < 0 ? "destructive" : "default"} 
+                      className={`text-xs ${customer.currentBalance > 0 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" : ""}`}
+                    >
+                      {customer.currentBalance < 0 ? "Due" : "Advance"}: PKR {Math.abs(customer.currentBalance).toLocaleString()}
                     </Badge>
                   )}
                 </div>
