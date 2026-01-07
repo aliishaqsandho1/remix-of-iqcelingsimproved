@@ -61,7 +61,6 @@ export function QuickCustomerForm({ open, onOpenChange, onCustomerCreated }: Qui
         onSubmit={handleSubmit} 
         onClose={() => onOpenChange(false)}
         onSelectExisting={handleSelectExisting}
-        simplified={true}
       />
     </Dialog>
   );

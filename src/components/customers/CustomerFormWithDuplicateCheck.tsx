@@ -3,8 +3,6 @@ import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -27,16 +25,13 @@ interface CustomerFormProps {
   onSelectExisting?: (customer: MatchingCustomer) => void;
   // For credits page - show initial credit field
   showInitialCredit?: boolean;
-  // Simplified mode - only name and phone fields
-  simplified?: boolean;
 }
 
 export function CustomerFormWithDuplicateCheck({ 
   onSubmit, 
   onClose,
   onSelectExisting,
-  showInitialCredit = false,
-  simplified = false
+  showInitialCredit = false
 }: CustomerFormProps) {
   const { toast } = useToast();
   
@@ -168,19 +163,13 @@ export function CustomerFormWithDuplicateCheck({
       return;
     }
 
-    const submitData = simplified ? {
+    // Always send prefilled values - only name and phone are user-editable
+    const submitData = {
       name: formData.name.trim(),
       phone: formData.phone.trim(),
-      type: "Temporary",
-      creditLimit: 0
-    } : {
-      name: formData.name.trim(),
-      phone: formData.phone.trim(),
-      email: formData.email.trim(),
-      address: formData.address.trim(),
       city: formData.city.trim(),
       type: formData.type,
-      creditLimit: parseFloat(formData.creditLimit) || 0,
+      creditLimit: parseFloat(formData.creditLimit) || 50000,
       ...(showInitialCredit && formData.initialCredit ? { initialCredit: parseFloat(formData.initialCredit) } : {})
     };
 
@@ -197,14 +186,14 @@ export function CustomerFormWithDuplicateCheck({
   const showDuplicateWarning = matchingCustomers.length > 0;
 
   return (
-    <DialogContent className={simplified ? "sm:max-w-lg" : "max-w-2xl max-h-[90vh] overflow-y-auto"}>
+    <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Add New Customer</DialogTitle>
       </DialogHeader>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name and Phone - Always visible */}
-        <div className={simplified ? "space-y-4" : "grid grid-cols-2 gap-4"}>
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="name">Customer Name *</Label>
             <div className="relative">
@@ -293,82 +282,20 @@ export function CustomerFormWithDuplicateCheck({
           </Card>
         )}
 
-        {/* Additional fields - only for non-simplified mode */}
-        {!simplified && (
-          <>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                placeholder="customer@example.com"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                placeholder="Enter address"
-                rows={2}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => setFormData({...formData, city: e.target.value})}
-                  placeholder="City name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="type">Customer Type</Label>
-                <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Temporary">Temporary</SelectItem>
-                    <SelectItem value="Semi-Permanent">Semi-Permanent</SelectItem>
-                    <SelectItem value="Permanent">Permanent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="creditLimit">Credit Limit (PKR)</Label>
-              <Input
-                id="creditLimit"
-                type="number"
-                value={formData.creditLimit}
-                onChange={(e) => setFormData({...formData, creditLimit: e.target.value})}
-                placeholder="50000"
-              />
-            </div>
-
-            {showInitialCredit && (
-              <div>
-                <Label htmlFor="initialCredit">Initial Credit Amount (Optional)</Label>
-                <Input
-                  id="initialCredit"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.initialCredit}
-                  onChange={(e) => setFormData({...formData, initialCredit: e.target.value})}
-                  placeholder="Enter initial credit (optional)"
-                />
-              </div>
-            )}
-          </>
+        {/* Show initial credit field only when showInitialCredit is true */}
+        {showInitialCredit && (
+          <div>
+            <Label htmlFor="initialCredit">Initial Credit Amount (Optional)</Label>
+            <Input
+              id="initialCredit"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.initialCredit}
+              onChange={(e) => setFormData({...formData, initialCredit: e.target.value})}
+              placeholder="Enter initial credit (optional)"
+            />
+          </div>
         )}
 
         <div className="flex gap-2 pt-4">
