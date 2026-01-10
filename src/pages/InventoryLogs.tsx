@@ -79,26 +79,51 @@ const InventoryLogs = () => {
     
     setLoading(true);
     try {
-      const response = await fetch(
-        `${apiConfig.getBaseUrl()}/inventory-logs?product_id=${productId}&page=${page}&per_page=20`
-      );
-      const data = await response.json();
-      
-      if (data.success) {
-        setLogs(data.data.logs || []);
-        setPagination(data.data.pagination || {
-          currentPage: 1,
-          totalPages: 1,
-          totalItems: 0,
-          itemsPerPage: 20
-        });
+      const url = `${apiConfig.getBaseUrl()}/inventory-logs?product_id=${productId}&page=${page}&per_page=20`;
+      const response = await fetch(url);
+      const rawText = await response.text();
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} while fetching inventory logs`);
+      }
+
+      // Backend sometimes prepends PHP/WP warnings (HTML) before the JSON payload.
+      // Extract the first JSON object/array from the response body.
+      const cleanedJsonText = (() => {
+        const trimmed = rawText.trim();
+        if (trimmed.startsWith("{") || trimmed.startsWith("[")) return trimmed;
+        const firstJsonCharIndex = trimmed.search(/[\[{]/);
+        return firstJsonCharIndex >= 0 ? trimmed.slice(firstJsonCharIndex) : trimmed;
+      })();
+
+      let data: any;
+      try {
+        data = JSON.parse(cleanedJsonText);
+      } catch (parseError) {
+        console.error("Inventory logs API returned non-JSON response prefix:", rawText.slice(0, 300));
+        throw parseError;
+      }
+
+      if (data?.success) {
+        setLogs(data.data?.logs || []);
+        setPagination(
+          data.data?.pagination || {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            itemsPerPage: 20,
+          }
+        );
+      } else {
+        throw new Error(data?.message || "Failed to load inventory logs");
       }
     } catch (error) {
       console.error("Error fetching inventory logs:", error);
       toast({
         title: "Error",
-        description: "Failed to load inventory logs",
-        variant: "destructive"
+        description:
+          "Inventory logs API returned invalid response (server warning before JSON). Please fix the server warnings.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
