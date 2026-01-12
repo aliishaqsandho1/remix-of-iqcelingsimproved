@@ -945,6 +945,19 @@ const ProductDialog = ({
               required
             />
           </div>
+          {isEdit && (
+            <div>
+              <Label htmlFor="stock">Stock Quantity</Label>
+              <Input
+                id="stock"
+                type="number"
+                step="0.01"
+                value={formData.stock}
+                onChange={(e) => handleInputChange('stock', e.target.value)}
+                required
+              />
+            </div>
+          )}
           <div>
             <Label htmlFor="minStock">Minimum Stock</Label>
             <Input
