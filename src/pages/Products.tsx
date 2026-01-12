@@ -159,53 +159,8 @@ const Products = () => {
       const response = await productsApi.getAll(params);
       
       if (response.success) {
-        let productData = response.data.products || response.data || [];
-        productData = Array.isArray(productData) ? productData : [];
-        
-        // Sort results to prioritize exact and starting matches when searching
-        if (searchTerm && searchTerm.trim()) {
-          const searchLower = searchTerm.toLowerCase().trim();
-          productData = productData.sort((a: any, b: any) => {
-            const aName = (a.name || '').toLowerCase();
-            const bName = (b.name || '').toLowerCase();
-            const aSku = (a.sku || '').toLowerCase();
-            const bSku = (b.sku || '').toLowerCase();
-            
-            // Priority 1: Exact name match
-            const aExactName = aName === searchLower;
-            const bExactName = bName === searchLower;
-            if (aExactName && !bExactName) return -1;
-            if (bExactName && !aExactName) return 1;
-            
-            // Priority 2: Name starts with search term
-            const aStartsName = aName.startsWith(searchLower);
-            const bStartsName = bName.startsWith(searchLower);
-            if (aStartsName && !bStartsName) return -1;
-            if (bStartsName && !aStartsName) return 1;
-            
-            // Priority 3: Name contains search term as whole word
-            const aContainsWord = new RegExp(`\\b${searchLower}\\b`, 'i').test(aName);
-            const bContainsWord = new RegExp(`\\b${searchLower}\\b`, 'i').test(bName);
-            if (aContainsWord && !bContainsWord) return -1;
-            if (bContainsWord && !aContainsWord) return 1;
-            
-            // Priority 4: Name contains search term
-            const aContainsName = aName.includes(searchLower);
-            const bContainsName = bName.includes(searchLower);
-            if (aContainsName && !bContainsName) return -1;
-            if (bContainsName && !aContainsName) return 1;
-            
-            // Priority 5: SKU contains search term
-            const aContainsSku = aSku.includes(searchLower);
-            const bContainsSku = bSku.includes(searchLower);
-            if (aContainsSku && !bContainsSku) return -1;
-            if (bContainsSku && !aContainsSku) return 1;
-            
-            return 0;
-          });
-        }
-        
-        setProducts(productData);
+        const productData = response.data.products || response.data || [];
+        setProducts(Array.isArray(productData) ? productData : []);
         
         if (response.data.pagination) {
           setPagination(response.data.pagination);
@@ -990,19 +945,6 @@ const ProductDialog = ({
               required
             />
           </div>
-          {isEdit && (
-            <div>
-              <Label htmlFor="stock">Stock Quantity</Label>
-              <Input
-                id="stock"
-                type="number"
-                step="0.01"
-                value={formData.stock}
-                onChange={(e) => handleInputChange('stock', e.target.value)}
-                required
-              />
-            </div>
-          )}
           <div>
             <Label htmlFor="minStock">Minimum Stock</Label>
             <Input
