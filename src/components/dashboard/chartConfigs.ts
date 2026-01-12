@@ -1,74 +1,75 @@
 
+// Coastal Blues color palette
+// #012A4A, #013A63, #01497C, #014F86, #2A6F97, #2C7DA0, #468FAF, #61A5C2, #89C2D9, #A9D6E5
+
 export const cashFlowChartConfig = {
   inflow: {
     label: "Cash Inflow",
-    color: "#10b981",
+    color: "#2C7DA0",
   },
   outflow: {
     label: "Cash Outflow",
-    color: "#ef4444",
+    color: "#014F86",
   },
   net: {
     label: "Net Cash Flow",
-    color: "#3b82f6",
+    color: "#468FAF",
   },
 }
 
-// Enhanced color palette for better visual separation
+// Enhanced color palette using Coastal Blues
 export const defaultColors = [
-  "#3B82F6", // Blue - Primary
-  "#10B981", // Emerald - Success
-  "#F59E0B", // Amber - Warning
-  "#EF4444", // Red - Danger
-  "#8B5CF6", // Purple
-  "#EC4899", // Pink
-  "#06B6D4", // Cyan
-  "#84CC16", // Lime
-  "#F97316", // Orange
-  "#6366F1", // Indigo
-  "#14B8A6", // Teal
-  "#F59E0B", // Yellow
+  "#01497C", // Deep blue
+  "#2A6F97", // Medium blue
+  "#468FAF", // Ocean blue
+  "#61A5C2", // Sky blue
+  "#89C2D9", // Light blue
+  "#A9D6E5", // Pale blue
+  "#013A63", // Dark blue
+  "#014F86", // Navy blue
+  "#2C7DA0", // Teal blue
+  "#012A4A", // Darkest blue
 ];
 
-// Updated category config with more distinct colors
+// Updated category config with Coastal Blues
 export const categoryChartConfig = {
-  "UV Sheets": { label: "UV Sheets", color: "#3B82F6" },
-  "Taj Sheets": { label: "Taj Sheets", color: "#10B981" },
-  "ZRK": { label: "ZRK", color: "#F59E0B" },
-  "Lamination": { label: "Lamination", color: "#EF4444" },
-  "Test Category": { label: "Test Category", color: "#8B5CF6" },
-  "PATEX": { label: "PATEX", color: "#06B6D4" },
-  "LMDF": { label: "LMDF", color: "#84CC16" },
-  "ASH VEENIER": { label: "ASH VEENIER", color: "#F97316" },
-  sheets: { label: "Sheets", color: "#3b82f6" },
-  uncategorized: { label: "Uncategorized", color: "#ef4444" },
-  new: { label: "New", color: "#10b981" },
-  electronics: { label: "Electronics", color: "#f59e0b" },
-  plus: { label: "Plus", color: "#8b5cf6" },
+  "UV Sheets": { label: "UV Sheets", color: "#01497C" },
+  "Taj Sheets": { label: "Taj Sheets", color: "#2A6F97" },
+  "ZRK": { label: "ZRK", color: "#468FAF" },
+  "Lamination": { label: "Lamination", color: "#61A5C2" },
+  "Test Category": { label: "Test Category", color: "#89C2D9" },
+  "PATEX": { label: "PATEX", color: "#013A63" },
+  "LMDF": { label: "LMDF", color: "#014F86" },
+  "ASH VEENIER": { label: "ASH VEENIER", color: "#2C7DA0" },
+  sheets: { label: "Sheets", color: "#01497C" },
+  uncategorized: { label: "Uncategorized", color: "#A9D6E5" },
+  new: { label: "New", color: "#2A6F97" },
+  electronics: { label: "Electronics", color: "#468FAF" },
+  plus: { label: "Plus", color: "#61A5C2" },
 }
 
 export const salesChartConfig = {
   sales: {
     label: "Actual Sales",
-    color: "#10b981",
+    color: "#2A6F97",
   },
   target: {
     label: "Target",
-    color: "#f59e0b",
+    color: "#89C2D9",
   },
 }
 
 export const inventoryChartConfig = {
   stock: {
     label: "Current Stock",
-    color: "#3b82f6",
+    color: "#01497C",
   },
   sold: {
     label: "Units Sold",
-    color: "#10b981",
+    color: "#2A6F97",
   },
   reorderLevel: {
     label: "Reorder Level",
-    color: "#ef4444",
+    color: "#014F86",
   },
 }
