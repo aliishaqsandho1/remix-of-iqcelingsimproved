@@ -151,7 +151,7 @@ export interface Expense {
   date: string;
   payment_method: string;
   description: string;
-  account_id: string;
+  account_id: string | number;
   reference: string;
   receipt_url?: string;
   created_at: string;
@@ -163,7 +163,7 @@ export interface ScheduledExpense {
   amount: string;
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
   start_date: string;
-  account_id: string;
+  account_id: string | number;
   payment_method: string;
   description: string;
   status: 'active' | 'paused' | 'completed';
@@ -478,8 +478,8 @@ export const newFinanceApi = {
     }
     const query = queryParams.toString();
     return apiRequest<any>(`/expenses${query ? `?${query}` : ''}`).then((res) => {
-      const expenses = res?.data?.expenses ?? [];
-      const pagination = res?.data?.pagination;
+      const expenses = Array.isArray(res?.data) ? res.data : (res?.data?.expenses ?? []);
+      const pagination = res?.pagination ?? res?.data?.pagination;
       return { ...res, data: expenses, pagination } as ApiResponse<Expense[]>;
     });
   },
@@ -490,7 +490,7 @@ export const newFinanceApi = {
     date: string;
     payment_method: string;
     description: string;
-    account_id?: string;
+    account_id?: string | number;
     reference?: string;
     receipt_url?: string;
   }) =>
@@ -505,7 +505,7 @@ export const newFinanceApi = {
     date: string;
     payment_method: string;
     description: string;
-    account_id: string;
+    account_id: string | number;
     reference: string;
     receipt_url: string;
   }>) =>
@@ -567,17 +567,17 @@ export const newFinanceApi = {
         expense_count: Number(d?.total?.count ?? 0),
         categories: Array.isArray(d?.by_category)
           ? d.by_category.map((c: any) => ({
-              category: c.category,
-              total: c.total,
-              count: Number(c.count ?? 0),
-            }))
+            category: c.category,
+            total: c.total,
+            count: Number(c.count ?? 0),
+          }))
           : [],
         payment_methods: Array.isArray(d?.by_payment_method)
           ? d.by_payment_method.map((m: any) => ({
-              method: m.payment_method,
-              total: m.total,
-              count: Number(m.count ?? 0),
-            }))
+            method: m.payment_method,
+            total: m.total,
+            count: Number(m.count ?? 0),
+          }))
           : [],
       };
       return { ...res, data: mapped } as ApiResponse<ExpenseSummary>;
@@ -609,8 +609,8 @@ export const newFinanceApi = {
     }
     const query = queryParams.toString();
     return apiRequest<any>(`/finance/expenses/scheduled${query ? `?${query}` : ''}`).then((res) => {
-      const list = res?.data?.scheduled_expenses ?? res?.data ?? [];
-      const pagination = res?.data?.pagination;
+      const list = Array.isArray(res?.data) ? res.data : (res?.data?.scheduled_expenses ?? res?.data ?? []);
+      const pagination = res?.pagination ?? res?.data?.pagination;
       return { ...res, data: Array.isArray(list) ? list : [], pagination } as ApiResponse<ScheduledExpense[]>;
     });
   },
@@ -620,7 +620,7 @@ export const newFinanceApi = {
     amount: number;
     frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
     start_date: string;
-    account_id?: string;
+    account_id?: string | number;
     payment_method: string;
     description: string;
   }) =>
@@ -634,7 +634,7 @@ export const newFinanceApi = {
     description: string;
     amount: number;
     frequency: string;
-    account_id: string;
+    account_id: string | number;
     payment_method: string;
   }>) =>
     apiRequest<ScheduledExpense>(`/finance/expenses/scheduled/${id}`, {
