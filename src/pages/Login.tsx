@@ -212,14 +212,7 @@ const Login = () => {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Shield className="w-10 h-10 text-primary" />
                   </div>
-                  {/* Sparkle */}
-                  <motion.div
-                    className="absolute -top-1 -right-1"
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Sparkles className="w-5 h-5 text-primary" />
-                  </motion.div>
+                 
                 </div>
               </motion.div>
 
@@ -229,7 +222,7 @@ const Login = () => {
                 transition={{ delay: 0.3 }}
                 className="text-3xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent"
               >
-                Welcome Back
+                USMAN HARDWARES
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
@@ -432,7 +425,6 @@ const Login = () => {
           transition={{ delay: 1 }}
           className="mt-8 text-center text-sm text-muted-foreground/60"
         >
-          Secured with enterprise-grade encryption
         </motion.p>
       </motion.div>
     </div>
