@@ -1,4 +1,4 @@
-import { ClipboardList, User, Menu, Home, ChevronRight, Maximize, Minimize, ScrollText } from "lucide-react";
+import { ClipboardList, User, Menu, Home, ChevronRight, Maximize, Minimize, ScrollText, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Header() {
   const { toast } = useToast();
@@ -21,6 +22,7 @@ export function Header() {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout, user } = useAuth();
   
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -42,6 +44,24 @@ export function Header() {
         setIsFullscreen(false);
       }).catch((err) => {
         console.error('Error attempting to exit fullscreen:', err);
+      });
+    }
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: "Logged out",
+        description: "You have been logged out successfully",
+      });
+      navigate('/login', { replace: true });
+    } catch (error) {
+      toast({
+        title: "Logout failed",
+        description: "Could not log out. Please try again.",
+        variant: "destructive"
       });
     }
   };
@@ -82,6 +102,17 @@ export function Header() {
   };
 
   const breadcrumbs = getBreadcrumbs();
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    }
+    if (user?.username) {
+      return user.username.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
 
   return (
     <header className="h-16 border-b border-border bg-background sticky top-0 z-50">
@@ -157,6 +188,17 @@ export function Header() {
             <ClipboardList className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
 
+          {/* Logout Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            className="h-8 w-8 md:h-10 md:w-10 hover:bg-destructive/10 hover:text-destructive"
+            title="Logout"
+          >
+            <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+          </Button>
+
           {/* Theme Toggle */}
           <ThemeToggle />
 
@@ -165,21 +207,18 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/01.png" alt="Admin" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">A</AvatarFallback>
+                  <AvatarImage src="/avatars/01.png" alt={user?.username || 'User'} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">{getUserInitials()}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-background border shadow-lg z-50" align="end" forceMount>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
                 <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span>Logout</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
