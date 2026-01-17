@@ -1,4 +1,5 @@
 import { apiConfig } from '@/utils/apiConfig';
+import { getAuthHeader, tokenManager } from '@/services/authApi';
 
 // API response types
 export interface ApiResponse<T> {
@@ -113,7 +114,7 @@ export interface EnhancedDashboardData {
   }>;
 }
 
-// Generic API request function
+// Generic API request function with auth header
 const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {}
@@ -124,10 +125,18 @@ const apiRequest = async <T>(
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeader(),
         ...options.headers,
       },
       ...options,
     });
+    
+    // Handle 401 Unauthorized - clear auth and could trigger redirect
+    if (response.status === 401) {
+      tokenManager.clearAuth();
+      // Dispatch custom event for auth state change
+      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+    }
 
     if (!response.ok) {
       // Try to extract error message from response body
