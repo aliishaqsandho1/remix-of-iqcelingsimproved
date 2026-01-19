@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/ims/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://billionairesuit.store/ims/v1';
 
 // New monthly report interfaces
 export interface MonthlyProductSale {
