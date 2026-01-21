@@ -1,5 +1,4 @@
 import { apiConfig } from '@/utils/apiConfig';
-import { getAuthHeader, tokenManager } from '@/services/authApi';
 
 // API response types
 export interface ApiResponse<T> {
@@ -114,7 +113,7 @@ export interface EnhancedDashboardData {
   }>;
 }
 
-// Generic API request function with auth header
+// Generic API request function
 const apiRequest = async <T>(
   endpoint: string,
   options: RequestInit = {}
@@ -125,18 +124,10 @@ const apiRequest = async <T>(
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
-        ...getAuthHeader(),
         ...options.headers,
       },
       ...options,
     });
-    
-    // Handle 401 Unauthorized - clear auth and could trigger redirect
-    if (response.status === 401) {
-      tokenManager.clearAuth();
-      // Dispatch custom event for auth state change
-      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
-    }
 
     if (!response.ok) {
       // Try to extract error message from response body
@@ -181,14 +172,14 @@ const apiRequest = async <T>(
       // Handle mixed HTML/JSON responses (WordPress database errors followed by JSON)
       try {
         const textResponse = await response.text();
-
+        
         // Look for JSON in the response text
         const jsonMatch = textResponse.match(/\{.*\}$/);
         if (jsonMatch) {
           const jsonData = JSON.parse(jsonMatch[0]);
           return jsonData;
         }
-
+        
         // If no JSON found, throw original error
         throw new Error('Server returned invalid response format');
       } catch (fallbackError) {
@@ -245,26 +236,26 @@ export const productsApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/products${query ? `?${query}` : ''}`);
   },
-
+  
   getById: (id: number) => apiRequest<ApiResponse<any>>(`/products/${id}`),
-
-  create: (product: any) =>
+  
+  create: (product: any) => 
     apiRequest<ApiResponse<any>>('/products', {
       method: 'POST',
       body: JSON.stringify(product),
     }),
-
+  
   update: (id: number, product: any) =>
     apiRequest<ApiResponse<any>>(`/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(product),
     }),
-
+  
   delete: (id: number) =>
     apiRequest<ApiResponse<any>>(`/products/${id}`, {
       method: 'DELETE',
     }),
-
+  
   adjustStock: (id: number, adjustment: any) =>
     apiRequest<ApiResponse<any>>(`/products/${id}/stock-adjustment`, {
       method: 'POST',
@@ -329,21 +320,21 @@ export const customersApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/creditcustomers${query ? `?${query}` : ''}`);
   },
-
+  
   getById: (id: number) => apiRequest<ApiResponse<any>>(`/customers/${id}`),
-
+  
   create: (customer: any) =>
     apiRequest<ApiResponse<any>>('/customers', {
       method: 'POST',
       body: JSON.stringify(customer),
     }),
-
+  
   update: (id: number, customer: any) =>
     apiRequest<ApiResponse<any>>(`/customers/${id}`, {
       method: 'PUT',
       body: JSON.stringify(customer),
     }),
-
+ 
   delete: (id: number) =>
     apiRequest<ApiResponse<any>>(`/customers/${id}`, {
       method: 'DELETE',
@@ -369,25 +360,19 @@ export const salesApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/sales${query ? `?${query}` : ''}`);
   },
-
+  
   getById: (id: number) => apiRequest<ApiResponse<any>>(`/sales/${id}`),
-
+  
   create: (sale: any) =>
     apiRequest<ApiResponse<any>>('/sales', {
       method: 'POST',
       body: JSON.stringify(sale),
     }),
-
+  
   updateStatus: (id: number, status: any) =>
     apiRequest<ApiResponse<any>>(`/sales/${id}/status`, {
       method: 'PUT',
       body: JSON.stringify(status),
-    }),
-
-  updateDetails: (id: number, details: any) =>
-    apiRequest<ApiResponse<any>>(`/sales/${id}/details`, {
-      method: 'PUT',
-      body: JSON.stringify(details),
     }),
 
   adjustOrder: (id: number, adjustment: any) =>
@@ -396,7 +381,7 @@ export const salesApi = {
       body: JSON.stringify(adjustment),
     }),
 
-  generatePDF: (id: number) =>
+  generatePDF: (id: number) => 
     apiRequest<Blob>(`/sales/${id}/pdf`, {
       headers: {
         'Accept': 'application/pdf',
@@ -423,7 +408,7 @@ export const inventoryApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/inventory${query ? `?${query}` : ''}`);
   },
-
+  
   getMovements: (params?: {
     page?: number;
     limit?: number;
@@ -441,7 +426,7 @@ export const inventoryApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/inventory/movements${query ? `?${query}` : ''}`);
   },
-
+  
   restock: (restock: any) =>
     apiRequest<ApiResponse<any>>('/inventory/restock', {
       method: 'POST',
@@ -466,12 +451,12 @@ export const notificationsApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/notifications${query ? `?${query}` : ''}`);
   },
-
+  
   markAsRead: (id: number) =>
     apiRequest<ApiResponse<any>>(`/notifications/${id}/read`, {
       method: 'PUT',
     }),
-
+  
   markAllAsRead: () =>
     apiRequest<ApiResponse<any>>('/notifications/mark-all-read', {
       method: 'PUT',
@@ -495,21 +480,21 @@ export const suppliersApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/suppliers${query ? `?${query}` : ''}`);
   },
-
+  
   getById: (id: number) => apiRequest<ApiResponse<any>>(`/suppliers/${id}`),
-
+  
   create: (supplier: any) =>
     apiRequest<ApiResponse<any>>('/suppliers', {
       method: 'POST',
       body: JSON.stringify(supplier),
     }),
-
+  
   update: (id: number, supplier: any) =>
     apiRequest<ApiResponse<any>>(`/suppliers/${id}`, {
       method: 'PUT',
       body: JSON.stringify(supplier),
     }),
-
+  
   delete: (id: number) =>
     apiRequest<ApiResponse<any>>(`/suppliers/${id}`, {
       method: 'DELETE',
@@ -535,21 +520,21 @@ export interface Employee {
 // Employees API
 export const employeesApi = {
   getAll: () => apiRequest<ApiResponse<Employee[]>>('/employees'),
-
+  
   getById: (id: number) => apiRequest<ApiResponse<Employee>>(`/employees/${id}`),
-
+  
   create: (employee: Employee) =>
     apiRequest<ApiResponse<Employee>>('/employees', {
       method: 'POST',
       body: JSON.stringify(employee),
     }),
-
+  
   update: (id: number, employee: Employee) =>
     apiRequest<ApiResponse<Employee>>(`/employees/${id}`, {
       method: 'PUT',
       body: JSON.stringify(employee),
     }),
-
+  
   delete: (id: number) =>
     apiRequest<ApiResponse<any>>(`/employees/${id}`, {
       method: 'DELETE',
@@ -578,28 +563,28 @@ export const purchaseOrdersApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/purchase-orders${query ? `?${query}` : ''}`);
   },
-
+  
   getById: (id: number) => apiRequest<ApiResponse<any>>(`/purchase-orders/${id}`),
-
+  
   create: (order: any) =>
     apiRequest<ApiResponse<any>>('/purchase-orders', {
       method: 'POST',
       body: JSON.stringify(order),
     }),
-
+  
   update: (id: number, order: any) =>
     apiRequest<ApiResponse<any>>(`/purchase-orders/${id}`, {
       method: 'PUT',
       body: JSON.stringify(order),
     }),
-
+  
   // Fixed: Simple status update endpoint that matches the API
   updateStatus: (id: number, status: string, notes?: string) =>
     apiRequest<ApiResponse<any>>(`/purchase-orders/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ status, notes }),
     }),
-
+  
   receive: (id: number, data: any) =>
     apiRequest<ApiResponse<any>>(`/purchase-orders/${id}/receive`, {
       method: 'PUT',
@@ -634,37 +619,37 @@ export const quotationsApi = {
     const query = queryParams.toString();
     return apiRequest<any>(`/quotations${query ? `?${query}` : ''}`);
   },
-
+  
   getById: (id: number) => apiRequest<ApiResponse<any>>(`/quotations/${id}`),
-
-  create: (quotation: any) =>
+  
+  create: (quotation: any) => 
     apiRequest<ApiResponse<any>>('/quotations', {
       method: 'POST',
       body: JSON.stringify(quotation),
     }),
-
+  
   update: (id: number, quotation: any) =>
     apiRequest<ApiResponse<any>>(`/quotations/${id}`, {
       method: 'PUT',
       body: JSON.stringify(quotation),
     }),
-
+  
   delete: (id: number) =>
     apiRequest<ApiResponse<any>>(`/quotations/${id}`, {
       method: 'DELETE',
     }),
-
+  
   send: (id: number) =>
     apiRequest<ApiResponse<any>>(`/quotations/${id}/send`, {
       method: 'PUT',
     }),
-
+  
   updateStatus: (id: number, status: string) =>
     apiRequest<ApiResponse<any>>(`/quotations/${id}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status }),
     }),
-
+  
   convertToSale: (id: number) =>
     apiRequest<ApiResponse<any>>(`/quotations/${id}/convert-to-sale`, {
       method: 'PUT',

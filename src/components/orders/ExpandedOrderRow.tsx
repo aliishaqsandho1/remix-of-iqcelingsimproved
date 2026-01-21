@@ -45,18 +45,18 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
   const { toast } = useToast();
   const { updateBalanceForOrderStatusChange } = useCustomerBalance();
   const { handleOrderStatusChange } = useStockManagement();
-
+  
   const [isEditingStatus, setIsEditingStatus] = useState(false);
   const [isEditingPayment, setIsEditingPayment] = useState(false);
   const [isEditingCustomer, setIsEditingCustomer] = useState(false);
   const [isReturning, setIsReturning] = useState(false);
-
+  
   const [editedStatus, setEditedStatus] = useState(order.status);
   const [editedPaymentMethod, setEditedPaymentMethod] = useState(order.paymentMethod);
   const [editedCustomer, setEditedCustomer] = useState(order.customerName || "Walk-in");
   const [returnQuantities, setReturnQuantities] = useState<{ [key: number]: number }>({});
   const [returnNotes, setReturnNotes] = useState("");
-
+  
   const [isLoading, setIsLoading] = useState(false);
 
   // Live calculations for return flow
@@ -116,7 +116,7 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
         editedStatus,
         order.status
       );
-
+      
       if (!stockResult.success) {
         toast({
           title: "Stock Update Failed",
@@ -125,7 +125,7 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
         });
         return;
       }
-
+      
       // Handle customer balance
       if (order.customerId) {
         await updateBalanceForOrderStatusChange(
@@ -140,12 +140,12 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
 
       // Update status
       await salesApi.updateStatus(order.id, { status: editedStatus });
-
+      
       toast({
         title: "Status Updated",
         description: "Order status has been updated successfully",
       });
-
+      
       setIsEditingStatus(false);
       onOrderUpdated?.();
     } catch (error: any) {
@@ -163,13 +163,19 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
   const handleSavePayment = async () => {
     setIsLoading(true);
     try {
-      await salesApi.updateDetails(order.id, { paymentMethod: editedPaymentMethod });
-
+      const response = await fetch(`/api/sales/${order.id}/details`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod: editedPaymentMethod })
+      });
+      
+      if (!response.ok) throw new Error('Failed to update payment method');
+      
       toast({
         title: "Payment Method Updated",
         description: "Payment method has been updated successfully",
       });
-
+      
       setIsEditingPayment(false);
       onOrderUpdated?.();
     } catch (error: any) {
@@ -186,7 +192,7 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
 
   const handleReturn = async () => {
     const itemsToReturn = Object.entries(returnQuantities).filter(([_, qty]) => qty > 0);
-
+    
     if (itemsToReturn.length === 0) {
       toast({
         title: "No Items Selected",
@@ -211,12 +217,12 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
       };
 
       await salesApi.adjustOrder(order.id, returnData);
-
+      
       toast({
         title: "Return Processed",
         description: "Items have been returned and inventory updated",
       });
-
+      
       setIsReturning(false);
       setReturnQuantities({});
       setReturnNotes("");
@@ -482,7 +488,7 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
           <div className="px-4 py-3 bg-orange-50 dark:bg-orange-950/20 border-b border-orange-200 dark:border-orange-800">
             <h4 className="text-sm font-semibold text-foreground">Outsourced Items</h4>
           </div>
-
+          
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-muted/50">

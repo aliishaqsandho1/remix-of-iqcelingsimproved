@@ -23,8 +23,7 @@ import {
   Pause,
   Receipt,
   Filter,
-  Download,
-  Zap
+  Download
 } from "lucide-react";
 
 export const ExpensesTab = () => {
@@ -34,7 +33,6 @@ export const ExpensesTab = () => {
   const [scheduledExpenses, setScheduledExpenses] = useState<ScheduledExpense[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [categories, setCategories] = useState<string[]>([]);
-  const [accounts, setAccounts] = useState<any[]>([]);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showScheduleExpense, setShowScheduleExpense] = useState(false);
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -76,7 +74,7 @@ export const ExpensesTab = () => {
         date: editingExpense.date,
         payment_method: editingExpense.payment_method,
         description: editingExpense.description,
-        account_id: editingExpense.account_id?.toString() || "",
+        account_id: editingExpense.account_id,
         reference: editingExpense.reference || ""
       });
       setShowAddExpense(true);
@@ -90,7 +88,7 @@ export const ExpensesTab = () => {
         amount: editingScheduled.amount,
         frequency: editingScheduled.frequency,
         start_date: editingScheduled.start_date,
-        account_id: editingScheduled.account_id?.toString() || "",
+        account_id: editingScheduled.account_id,
         payment_method: editingScheduled.payment_method,
         description: editingScheduled.description
       });
@@ -105,21 +103,18 @@ export const ExpensesTab = () => {
         expensesRes,
         scheduledRes,
         summaryRes,
-        categoriesRes,
-        accountsRes
+        categoriesRes
       ] = await Promise.all([
         newFinanceApi.getExpenses({ limit: 10 }).catch(() => ({ data: [] })),
         newFinanceApi.getScheduledExpenses({ limit: 10 }).catch(() => ({ data: [] })),
         newFinanceApi.getExpensesSummary().catch(() => ({ data: null })),
-        newFinanceApi.getExpenseCategories().catch(() => ({ data: [] })),
-        newFinanceApi.getAccounts().catch(() => ({ data: [] }))
+        newFinanceApi.getExpenseCategories().catch(() => ({ data: [] }))
       ]);
 
       setExpenses(Array.isArray(expensesRes.data) ? expensesRes.data : []);
       setScheduledExpenses(Array.isArray(scheduledRes.data) ? scheduledRes.data : []);
       setSummary(summaryRes.data);
       setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : []);
-      setAccounts(Array.isArray(accountsRes.data) ? accountsRes.data : []);
     } catch (error) {
       console.error('Error loading expenses data:', error);
       toast({
@@ -136,8 +131,7 @@ export const ExpensesTab = () => {
     try {
       const expenseData = {
         ...expenseForm,
-        amount: parseFloat(expenseForm.amount),
-        account_id: expenseForm.account_id ? parseInt(expenseForm.account_id) : undefined
+        amount: parseFloat(expenseForm.amount)
       };
 
       if (editingExpense) {
@@ -153,7 +147,7 @@ export const ExpensesTab = () => {
           description: "Expense added successfully"
         });
       }
-
+      
       setShowAddExpense(false);
       setEditingExpense(null);
       resetExpenseForm();
@@ -169,7 +163,7 @@ export const ExpensesTab = () => {
 
   const handleDeleteExpense = async (id: string) => {
     if (!confirm("Are you sure you want to delete this expense?")) return;
-
+    
     try {
       await newFinanceApi.deleteExpense(id);
       toast({
@@ -203,8 +197,7 @@ export const ExpensesTab = () => {
       const scheduledData = {
         ...scheduledForm,
         amount: parseFloat(scheduledForm.amount),
-        frequency: scheduledForm.frequency as any,
-        account_id: scheduledForm.account_id ? parseInt(scheduledForm.account_id) : undefined
+        frequency: scheduledForm.frequency as any
       };
 
       if (editingScheduled) {
@@ -220,7 +213,7 @@ export const ExpensesTab = () => {
           description: "Expense scheduled successfully"
         });
       }
-
+      
       setShowScheduleExpense(false);
       setEditingScheduled(null);
       resetScheduledForm();
@@ -236,7 +229,7 @@ export const ExpensesTab = () => {
 
   const handleDeleteScheduledExpense = async (id: string) => {
     if (!confirm("Are you sure you want to delete this scheduled expense?")) return;
-
+    
     try {
       await newFinanceApi.deleteScheduledExpense(id);
       toast({
@@ -248,23 +241,6 @@ export const ExpensesTab = () => {
       toast({
         title: "Error",
         description: "Failed to delete scheduled expense",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleExecuteScheduledExpense = async (id: string) => {
-    try {
-      await newFinanceApi.executeScheduledExpense(id);
-      toast({
-        title: "Success",
-        description: "Scheduled expense executed successfully"
-      });
-      loadExpensesData();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to execute scheduled expense",
         variant: "destructive"
       });
     }
@@ -284,7 +260,7 @@ export const ExpensesTab = () => {
 
   const handleAddCategory = async () => {
     if (!newCategory.trim()) return;
-
+    
     try {
       await newFinanceApi.createExpenseCategory(newCategory);
       toast({
@@ -293,7 +269,6 @@ export const ExpensesTab = () => {
       });
       setNewCategory("");
       setShowAddCategory(false);
-      setCategories(prev => [...prev, newCategory].sort());
       loadExpensesData();
     } catch (error) {
       toast({
@@ -435,7 +410,7 @@ export const ExpensesTab = () => {
               <div className="space-y-4">
                 <div>
                   <Label>Category</Label>
-                  <Select value={expenseForm.category} onValueChange={(value) => setExpenseForm({ ...expenseForm, category: value })}>
+                  <Select value={expenseForm.category} onValueChange={(value) => setExpenseForm({...expenseForm, category: value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -451,36 +426,21 @@ export const ExpensesTab = () => {
                   <Input
                     type="number"
                     value={expenseForm.amount}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, amount: e.target.value })}
+                    onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
                     placeholder="0.00"
                   />
-                </div>
-                <div>
-                  <Label>Account</Label>
-                  <Select value={expenseForm.account_id} onValueChange={(value) => setExpenseForm({ ...expenseForm, account_id: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id.toString()}>
-                          {acc.account_name} ({acc.account_code})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
                 <div>
                   <Label>Date</Label>
                   <Input
                     type="date"
                     value={expenseForm.date}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, date: e.target.value })}
+                    onChange={(e) => setExpenseForm({...expenseForm, date: e.target.value})}
                   />
                 </div>
                 <div>
                   <Label>Payment Method</Label>
-                  <Select value={expenseForm.payment_method} onValueChange={(value) => setExpenseForm({ ...expenseForm, payment_method: value })}>
+                  <Select value={expenseForm.payment_method} onValueChange={(value) => setExpenseForm({...expenseForm, payment_method: value})}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -496,7 +456,7 @@ export const ExpensesTab = () => {
                   <Label>Description</Label>
                   <Textarea
                     value={expenseForm.description}
-                    onChange={(e) => setExpenseForm({ ...expenseForm, description: e.target.value })}
+                    onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
                     placeholder="Expense details..."
                   />
                 </div>
@@ -528,7 +488,7 @@ export const ExpensesTab = () => {
               <div className="space-y-4">
                 <div>
                   <Label>Category</Label>
-                  <Select value={scheduledForm.category} onValueChange={(value) => setScheduledForm({ ...scheduledForm, category: value })}>
+                  <Select value={scheduledForm.category} onValueChange={(value) => setScheduledForm({...scheduledForm, category: value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -544,42 +504,13 @@ export const ExpensesTab = () => {
                   <Input
                     type="number"
                     value={scheduledForm.amount}
-                    onChange={(e) => setScheduledForm({ ...scheduledForm, amount: e.target.value })}
+                    onChange={(e) => setScheduledForm({...scheduledForm, amount: e.target.value})}
                     placeholder="0.00"
                   />
                 </div>
                 <div>
-                  <Label>Account</Label>
-                  <Select value={scheduledForm.account_id} onValueChange={(value) => setScheduledForm({ ...scheduledForm, account_id: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id.toString()}>
-                          {acc.account_name} ({acc.account_code})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Payment Method</Label>
-                  <Select value={scheduledForm.payment_method} onValueChange={(value) => setScheduledForm({ ...scheduledForm, payment_method: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                      <SelectItem value="cheque">Cheque</SelectItem>
-                      <SelectItem value="credit_card">Credit Card</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
                   <Label>Frequency</Label>
-                  <Select value={scheduledForm.frequency} onValueChange={(value) => setScheduledForm({ ...scheduledForm, frequency: value })}>
+                  <Select value={scheduledForm.frequency} onValueChange={(value) => setScheduledForm({...scheduledForm, frequency: value})}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -596,14 +527,14 @@ export const ExpensesTab = () => {
                   <Input
                     type="date"
                     value={scheduledForm.start_date}
-                    onChange={(e) => setScheduledForm({ ...scheduledForm, start_date: e.target.value })}
+                    onChange={(e) => setScheduledForm({...scheduledForm, start_date: e.target.value})}
                   />
                 </div>
                 <div>
                   <Label>Description</Label>
                   <Textarea
                     value={scheduledForm.description}
-                    onChange={(e) => setScheduledForm({ ...scheduledForm, description: e.target.value })}
+                    onChange={(e) => setScheduledForm({...scheduledForm, description: e.target.value})}
                     placeholder="Expense details..."
                   />
                 </div>
@@ -689,15 +620,15 @@ export const ExpensesTab = () => {
                   <div className="text-right">
                     <p className="font-bold text-red-600">{formatCurrency(expense.amount)}</p>
                     <div className="flex items-center space-x-1 mt-1">
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => setEditingExpense(expense)}
                       >
                         <Edit className="w-3 h-3" />
                       </Button>
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => handleDeleteExpense(expense.id)}
                       >
@@ -730,8 +661,8 @@ export const ExpensesTab = () => {
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge variant="outline" className="text-xs">{expense.category}</Badge>
                       <Badge variant="outline" className="text-xs capitalize">{expense.frequency}</Badge>
-                      <Badge
-                        variant={expense.status === 'active' ? 'default' : 'secondary'}
+                      <Badge 
+                        variant={expense.status === 'active' ? 'default' : 'secondary'} 
                         className="text-xs"
                       >
                         {expense.status}
@@ -744,30 +675,22 @@ export const ExpensesTab = () => {
                   <div className="text-right">
                     <p className="font-bold">{formatCurrency(expense.amount)}</p>
                     <div className="flex items-center space-x-1 mt-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleExecuteScheduledExpense(expense.id)}
-                        title="Execute Now"
-                      >
-                        <Zap className="w-3 h-3 text-amber-500" />
-                      </Button>
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => toggleScheduledExpenseStatus(expense.id, expense.status)}
                       >
                         {expense.status === 'active' ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                       </Button>
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => setEditingScheduled(expense)}
                       >
                         <Edit className="w-3 h-3" />
                       </Button>
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => handleDeleteScheduledExpense(expense.id)}
                       >

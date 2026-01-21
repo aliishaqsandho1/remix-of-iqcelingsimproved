@@ -35,7 +35,7 @@ const Inventory = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(20);
   const [filteredProductsModal, setFilteredProductsModal] = useState({
-    open: false,
+    open: false,  
     title: '',
     filterType: 'all' as 'lowStock' | 'outOfStock' | 'inStock' | 'all'
   });
@@ -62,7 +62,7 @@ const Inventory = () => {
       const response = await inventoryApi.getAll({
         limit: 10000 // Large number to get all products
       });
-
+      
       if (response.success) {
         const inventoryData = response.data?.inventory || response.data || [];
         return Array.isArray(inventoryData) ? inventoryData : [];
@@ -81,7 +81,7 @@ const Inventory = () => {
         page: currentPage,
         limit: itemsPerPage
       };
-
+      
       if (searchTerm) params.search = searchTerm;
       if (categoryFilter !== 'all') params.category = categoryFilter;
       if (statusFilter === 'low') params.lowStock = true;
@@ -90,18 +90,18 @@ const Inventory = () => {
       console.log('Fetching inventory with params:', params);
       const response = await inventoryApi.getAll(params);
       console.log('Inventory API response:', response);
-
+      
       if (response.success) {
         const inventoryData = response.data?.inventory || response.data || [];
         console.log('Inventory data:', inventoryData);
-
+        
         const inventoryArray = Array.isArray(inventoryData) ? inventoryData : [];
         setInventory(inventoryArray);
-
+        
         // Handle pagination metadata - prioritize API response data
         let finalTotalItems = 0;
         let finalTotalPages = 1;
-
+        
         if (response.data?.pagination) {
           console.log('Using pagination metadata:', response.data.pagination);
           finalTotalPages = response.data.pagination.totalPages || 1;
@@ -116,15 +116,15 @@ const Inventory = () => {
           finalTotalItems = Math.max(inventoryArray.length, summary.totalProducts); // Assume at least summary.totalProducts products as mentioned
           finalTotalPages = Math.ceil(finalTotalItems / itemsPerPage);
         }
-
+        
         setTotalPages(finalTotalPages);
         setTotalItems(finalTotalItems);
-
-        console.log('Final pagination state:', {
-          currentPage,
+        
+        console.log('Final pagination state:', { 
+          currentPage, 
           totalPages: finalTotalPages,
           totalItems: finalTotalItems,
-          inventoryLength: inventoryArray.length
+          inventoryLength: inventoryArray.length 
         });
       }
     } catch (error) {
@@ -160,7 +160,7 @@ const Inventory = () => {
         const categoryList = [
           { value: "all", label: "All Categories" }
         ];
-
+        
         const categories = Array.isArray(response.data) ? response.data : [];
         categories.forEach((cat: any) => {
           if (typeof cat === 'string') {
@@ -170,7 +170,7 @@ const Inventory = () => {
             categoryList.push({ value: name, label: name });
           }
         });
-
+        
         setCategories(categoryList);
       }
     } catch (error) {
@@ -248,7 +248,7 @@ const Inventory = () => {
       console.error('Failed to delete product:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete product",
+        description: "Failed to delete product",
         variant: "destructive"
       });
     }
@@ -262,7 +262,7 @@ const Inventory = () => {
 
   const renderPagination = () => {
     console.log('Rendering pagination with:', { totalPages, currentPage, totalItems });
-
+    
     // Always show pagination if we have more than 1 page or if we have data that suggests pagination
     if (totalPages <= 1 && totalItems <= itemsPerPage) {
       console.log('Not showing pagination - total pages:', totalPages, 'total items:', totalItems);
@@ -271,7 +271,7 @@ const Inventory = () => {
 
     const pages = [];
     const maxVisiblePages = 5;
-
+    
     if (totalPages <= maxVisiblePages) {
       // Show all pages if total is small
       for (let i = 1; i <= totalPages; i++) {
@@ -280,11 +280,11 @@ const Inventory = () => {
     } else {
       // Always show first page
       pages.push(1);
-
+      
       // Calculate range around current page
       let start = Math.max(2, currentPage - 1);
       let end = Math.min(totalPages - 1, currentPage + 1);
-
+      
       // Adjust range if too close to start or end
       if (currentPage <= 3) {
         end = Math.min(totalPages - 1, 4);
@@ -292,24 +292,24 @@ const Inventory = () => {
       if (currentPage >= totalPages - 2) {
         start = Math.max(2, totalPages - 3);
       }
-
+      
       // Add ellipsis after first page if needed
       if (start > 2) {
         pages.push('ellipsis-start');
       }
-
+      
       // Add pages in range
       for (let i = start; i <= end; i++) {
         if (!pages.includes(i)) {
           pages.push(i);
         }
       }
-
+      
       // Add ellipsis before last page if needed
       if (end < totalPages - 1) {
         pages.push('ellipsis-end');
       }
-
+      
       // Always show last page (if different from first)
       if (totalPages > 1 && !pages.includes(totalPages)) {
         pages.push(totalPages);
@@ -323,12 +323,12 @@ const Inventory = () => {
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious
+              <PaginationPrevious 
                 onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
                 className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
               />
             </PaginationItem>
-
+            
             {pages.map((page, index) => (
               <PaginationItem key={index}>
                 {page === 'ellipsis-start' || page === 'ellipsis-end' ? (
@@ -344,7 +344,7 @@ const Inventory = () => {
                 )}
               </PaginationItem>
             ))}
-
+            
             <PaginationItem>
               <PaginationNext
                 onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
@@ -353,7 +353,7 @@ const Inventory = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-
+        
         {/* Show pagination info like in the image */}
         <div className="text-sm text-muted-foreground">
           Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} products
@@ -391,7 +391,7 @@ const Inventory = () => {
       </div>
 
       {/* Use the new reusable summary cards */}
-      <InventorySummaryCards
+      <InventorySummaryCards 
         summary={summary}
         onCardClick={openFilteredModal}
       />
@@ -526,7 +526,7 @@ const Inventory = () => {
                       );
                     })}
                   </div>
-
+                  
                   {/* Pagination */}
                   {renderPagination()}
                 </>
@@ -550,10 +550,11 @@ const Inventory = () => {
                   {movements.map((movement) => (
                     <div key={movement.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center gap-4">
-                        <div className={`p-2 rounded-full ${movement.type === 'sale' ? 'bg-red-100 text-red-600' :
-                            movement.type === 'purchase' ? 'bg-green-100 text-green-600' :
-                              'bg-blue-100 text-blue-600'
-                          }`}>
+                        <div className={`p-2 rounded-full ${
+                          movement.type === 'sale' ? 'bg-red-100 text-red-600' :
+                          movement.type === 'purchase' ? 'bg-green-100 text-green-600' :
+                          'bg-blue-100 text-blue-600'
+                        }`}>
                           <Package className="h-4 w-4" />
                         </div>
                         <div>
@@ -620,13 +621,13 @@ const Inventory = () => {
 };
 
 // Stock Adjustment Dialog Component
-const StockAdjustmentDialog = ({
-  product,
-  onSubmit,
-  onClose
-}: {
-  product: any;
-  onSubmit: (data: any) => void;
+const StockAdjustmentDialog = ({ 
+  product, 
+  onSubmit, 
+  onClose 
+}: { 
+  product: any; 
+  onSubmit: (data: any) => void; 
   onClose: () => void;
 }) => {
   const [formData, setFormData] = useState({
@@ -652,7 +653,7 @@ const StockAdjustmentDialog = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="type">Adjustment Type</Label>
-          <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+          <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -672,7 +673,7 @@ const StockAdjustmentDialog = ({
             type="number"
             step="0.01"
             value={formData.quantity}
-            onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+            onChange={(e) => setFormData({...formData, quantity: e.target.value})}
             placeholder="Enter quantity (+ for increase, - for decrease)"
             required
           />
@@ -686,7 +687,7 @@ const StockAdjustmentDialog = ({
           <Input
             id="reason"
             value={formData.reason}
-            onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+            onChange={(e) => setFormData({...formData, reason: e.target.value})}
             placeholder="Reason for adjustment"
             required
           />
@@ -697,7 +698,7 @@ const StockAdjustmentDialog = ({
           <Input
             id="reference"
             value={formData.reference}
-            onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+            onChange={(e) => setFormData({...formData, reference: e.target.value})}
             placeholder="Reference number (optional)"
           />
         </div>
@@ -712,17 +713,17 @@ const StockAdjustmentDialog = ({
 };
 
 // Edit Product Dialog Component
-const EditProductDialog = ({
-  product,
-  categories,
-  units,
-  onSubmit,
-  onClose
-}: {
-  product: any;
-  categories: any[];
-  units: any[];
-  onSubmit: (data: any) => void;
+const EditProductDialog = ({ 
+  product, 
+  categories, 
+  units, 
+  onSubmit, 
+  onClose 
+}: { 
+  product: any; 
+  categories: any[]; 
+  units: any[]; 
+  onSubmit: (data: any) => void; 
   onClose: () => void;
 }) => {
   const [formData, setFormData] = useState({
@@ -753,14 +754,14 @@ const EditProductDialog = ({
           <Input
             id="name"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
             required
           />
         </div>
 
         <div>
           <Label htmlFor="category">Category</Label>
-          <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+          <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -780,7 +781,7 @@ const EditProductDialog = ({
               type="number"
               step="0.01"
               value={formData.minStock}
-              onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
+              onChange={(e) => setFormData({...formData, minStock: e.target.value})}
               required
             />
           </div>
@@ -791,7 +792,7 @@ const EditProductDialog = ({
               type="number"
               step="0.01"
               value={formData.maxStock}
-              onChange={(e) => setFormData({ ...formData, maxStock: e.target.value })}
+              onChange={(e) => setFormData({...formData, maxStock: e.target.value})}
               required
             />
           </div>
@@ -799,7 +800,7 @@ const EditProductDialog = ({
 
         <div>
           <Label htmlFor="unit">Unit</Label>
-          <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
+          <Select value={formData.unit} onValueChange={(value) => setFormData({...formData, unit: value})}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>

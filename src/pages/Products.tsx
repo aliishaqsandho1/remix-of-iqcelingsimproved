@@ -7,7 +7,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
+import { 
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -58,7 +58,7 @@ const Products = () => {
     open: false,
     product: null as any
   });
-
+  
   // Summary data for ALL products (not just current page)
   const [summary, setSummary] = useState({
     totalProducts: 0,
@@ -82,7 +82,7 @@ const Products = () => {
         const categoryList = [
           { value: "all", label: "All Categories" }
         ];
-
+        
         if (Array.isArray(response.data)) {
           response.data.forEach((cat: any) => {
             if (typeof cat === 'string') {
@@ -92,7 +92,7 @@ const Products = () => {
             }
           });
         }
-
+        
         setCategories(categoryList);
       }
     } catch (error) {
@@ -119,11 +119,11 @@ const Products = () => {
     try {
       // Fetch all products to calculate accurate summary
       const response = await productsApi.getAll({ limit: 10000, status: 'active' });
-
+      
       if (response.success) {
         const allProducts = response.data.products || response.data || [];
         const productArray = Array.isArray(allProducts) ? allProducts : [];
-
+        
         const inStockCount = productArray.filter((p: any) => (p.stock || 0) > (p.minStock || 0)).length;
         const lowStockCount = productArray.filter((p: any) => {
           const stock = p.stock || 0;
@@ -131,7 +131,7 @@ const Products = () => {
           return stock <= minStock && stock > 0;
         }).length;
         const outOfStockCount = productArray.filter((p: any) => (p.stock || 0) <= 0).length;
-
+        
         setSummary({
           totalProducts: productArray.length,
           inStock: inStockCount,
@@ -152,16 +152,16 @@ const Products = () => {
         limit: 20,
         status: 'active'
       };
-
+      
       if (searchTerm) params.search = searchTerm;
       if (categoryFilter !== 'all') params.category = categoryFilter;
 
       const response = await productsApi.getAll(params);
-
+      
       if (response.success) {
         const productData = response.data.products || response.data || [];
         setProducts(Array.isArray(productData) ? productData : []);
-
+        
         if (response.data.pagination) {
           setPagination(response.data.pagination);
         }
@@ -182,17 +182,17 @@ const Products = () => {
     try {
       setExportLoading(true);
       console.log('Starting enhanced PDF export for categories:', selectedCategories, 'type:', exportType);
-
+      
       // If multiple specific categories selected, we need to fetch and combine them
       let allProductsToExport: any[] = [];
-
+      
       if (selectedCategories.includes("all")) {
         // Fetch all products
-        const params = {
+        const params = { 
           limit: 10000,
-          status: 'active'
+          status: 'active' 
         };
-
+        
         const response = await productsApi.getAll(params);
         if (response.success) {
           allProductsToExport = response.data.products || response.data || [];
@@ -200,12 +200,12 @@ const Products = () => {
       } else {
         // Fetch products for each selected category
         for (const category of selectedCategories) {
-          const params = {
+          const params = { 
             limit: 10000,
             status: 'active',
             category: category
           };
-
+          
           const response = await productsApi.getAll(params);
           if (response.success) {
             const categoryProducts = response.data.products || response.data || [];
@@ -213,9 +213,9 @@ const Products = () => {
           }
         }
       }
-
+      
       console.log('Products to export:', allProductsToExport.length);
-
+      
       if (!Array.isArray(allProductsToExport) || allProductsToExport.length === 0) {
         toast({
           title: "No Products Found",
@@ -234,8 +234,8 @@ const Products = () => {
 
       // Prepare data for the new PDF generator
       const reportData = {
-        title: selectedCategories.includes("all")
-          ? 'Complete Stock Export Report'
+        title: selectedCategories.includes("all") 
+          ? 'Complete Stock Export Report' 
           : `Stock Report - ${selectedCategories.join(', ')}`,
         products: allProductsToExport.map((product: any) => ({
           id: product.id,
@@ -259,7 +259,7 @@ const Products = () => {
         title: "Professional Stock Report Generated!",
         description: `Successfully exported ${allProductsToExport.length} products with sales data.`,
       });
-
+      
       console.log('Enhanced PDF export completed successfully');
     } catch (error) {
       console.error('Failed to export stock to PDF:', error);
@@ -325,7 +325,7 @@ const Products = () => {
 
   const handleDeleteProduct = async (id: number) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
-
+    
     try {
       const response = await productsApi.delete(id);
       if (response.success) {
@@ -339,7 +339,7 @@ const Products = () => {
       console.error('Failed to delete product:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete product",
+        description: "Failed to delete product",
         variant: "destructive"
       });
     }
@@ -347,7 +347,7 @@ const Products = () => {
 
   const handleAddCategory = async () => {
     if (!newCategory.trim()) return;
-
+    
     try {
       const response = await categoriesApi.create({ name: newCategory });
       if (response.success) {
@@ -386,7 +386,7 @@ const Products = () => {
     return colors[category] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
   };
 
-
+  
 
   const renderPagination = () => {
     if (pagination.totalPages <= 1) return null;
@@ -421,12 +421,12 @@ const Products = () => {
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious
+            <PaginationPrevious 
               onClick={() => handlePageChange(currentPage - 1)}
               className={currentPage <= 1 ? "pointer-events-none opacity-50 cursor-not-allowed" : "cursor-pointer"}
             />
           </PaginationItem>
-
+          
           {pages.map((page, index) => (
             <PaginationItem key={index}>
               {page === 'ellipsis-start' || page === 'ellipsis-end' ? (
@@ -442,9 +442,9 @@ const Products = () => {
               )}
             </PaginationItem>
           ))}
-
+          
           <PaginationItem>
-            <PaginationNext
+            <PaginationNext 
               onClick={() => handlePageChange(currentPage + 1)}
               className={currentPage >= totalPages ? "pointer-events-none opacity-50 cursor-not-allowed" : "cursor-pointer"}
             />
@@ -533,8 +533,8 @@ const Products = () => {
             </DialogContent>
           </Dialog>
 
-          <Button
-            variant="outline"
+          <Button 
+            variant="outline" 
             onClick={() => setIsEnhancedExportOpen(true)}
             disabled={exportLoading}
             className="bg-red-600 hover:bg-red-700 text-white border-red-600 w-full sm:w-auto"
@@ -554,10 +554,10 @@ const Products = () => {
                 Add Product
               </Button>
             </DialogTrigger>
-            <ProductDialog
-              onSubmit={handleAddProduct}
-              onClose={() => setIsDialogOpen(false)}
-              categories={categories}
+            <ProductDialog 
+              onSubmit={handleAddProduct} 
+              onClose={() => setIsDialogOpen(false)} 
+              categories={categories} 
               units={units}
               onOpenCategoryDialog={() => setIsCategoryDialogOpen(true)}
             />
@@ -668,27 +668,29 @@ const Products = () => {
                 {products.map((product, index) => {
                   const hasIncompleteQuantity = product.incompleteQuantity || product.needsQuantityUpdate;
                   const isOutOfStock = !hasIncompleteQuantity && (product.stock || 0) <= 0;
-
+                  
                   return (
-                    <div
-                      key={product.id}
-                      className={`flex items-center gap-2 p-2 border rounded-lg hover:shadow-sm transition-all duration-200 ${hasIncompleteQuantity
+                    <div 
+                      key={product.id} 
+                      className={`flex items-center gap-2 p-2 border rounded-lg hover:shadow-sm transition-all duration-200 ${
+                        hasIncompleteQuantity
                           ? 'border-orange-300 bg-orange-50 dark:border-orange-600 dark:bg-orange-900/20'
                           : isOutOfStock
-                            ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-900/20'
-                            : 'border-border bg-card'
-                        }`}
+                          ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-900/20'
+                          : 'border-border bg-card'
+                      }`}
                     >
 
                       {/* Stock Status Warning */}
                       {(hasIncompleteQuantity || isOutOfStock) && (
                         <div className="flex-shrink-0" title={
-                          hasIncompleteQuantity
+                          hasIncompleteQuantity 
                             ? (product.quantityNote || "Incomplete quantity information")
                             : "Out of stock"
                         }>
-                          <AlertTriangle className={`h-4 w-4 ${isOutOfStock ? 'text-red-600' : 'text-orange-600'
-                            }`} />
+                          <AlertTriangle className={`h-4 w-4 ${
+                            isOutOfStock ? 'text-red-600' : 'text-orange-600'
+                          }`} />
                         </div>
                       )}
 
@@ -739,18 +741,18 @@ const Products = () => {
                         >
                           <Eye className="h-4 w-4 text-muted-foreground hover:text-blue-600" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
                           className="h-8"
                           onClick={() => openEditDialog(product)}
                         >
                           <Edit className="h-3 w-3 mr-1" />
                           Edit
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
                           className="text-red-600 hover:text-red-700 h-8"
                           onClick={() => handleDeleteProduct(product.id)}
                         >
@@ -778,8 +780,8 @@ const Products = () => {
 
       {selectedProduct && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <ProductDialog
-            onSubmit={handleEditProduct}
+          <ProductDialog 
+            onSubmit={handleEditProduct} 
             onClose={() => {
               setIsEditDialogOpen(false);
               setSelectedProduct(null);
@@ -810,17 +812,17 @@ const Products = () => {
   );
 };
 
-const ProductDialog = ({
-  onSubmit,
-  onClose,
-  categories,
+const ProductDialog = ({ 
+  onSubmit, 
+  onClose, 
+  categories, 
   units,
-  initialData = null,
+  initialData = null, 
   isEdit = false,
   onOpenCategoryDialog
-}: {
-  onSubmit: (data: any) => void;
-  onClose: () => void;
+}: { 
+  onSubmit: (data: any) => void; 
+  onClose: () => void; 
   categories: any[];
   units: any[];
   initialData?: any;
@@ -853,9 +855,9 @@ const ProductDialog = ({
     };
     onSubmit(submitData);
     if (!isEdit) {
-      setFormData({
-        name: "", sku: "", price: "", stock: "", category: "",
-        unit: "", minStock: "", description: "", costPrice: "", maxStock: ""
+      setFormData({ 
+        name: "", sku: "", price: "", stock: "", category: "", 
+        unit: "", minStock: "", description: "", costPrice: "", maxStock: "" 
       });
     }
   };
@@ -863,12 +865,12 @@ const ProductDialog = ({
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-
+      
       // Auto-generate SKU when name changes (only for new products)
       if (field === 'name' && !isEdit) {
         newData.sku = generateSKU(value);
       }
-
+      
       return newData;
     });
   };
