@@ -284,177 +284,189 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
 
   return (
     <div className="p-4 bg-muted/30 border-t border-border">
-      {/* Simple Edit Form */}
-      <div className="bg-card rounded-lg border border-border p-4 mb-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Customer Selector */}
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Customer</Label>
-            <Button
-              variant="outline"
-              className="w-full justify-between h-9 text-sm font-normal"
-              onClick={() => setIsCustomerPickerOpen(true)}
-            >
-              <span className="flex items-center gap-2 truncate">
-                <User className="h-3.5 w-3.5 text-muted-foreground" />
-                {selectedCustomerName}
-              </span>
-            </Button>
-          </div>
-
-          {/* Status Selector */}
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Status</Label>
-            <Select value={editedStatus} onValueChange={setEditedStatus}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="completed">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                    Completed
-                  </div>
-                </SelectItem>
-                <SelectItem value="pending">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                    Pending
-                  </div>
-                </SelectItem>
-                <SelectItem value="cancelled">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-500" />
-                    Cancelled
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Payment Method Selector */}
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Payment Method</Label>
-            <Select value={editedPaymentMethod} onValueChange={setEditedPaymentMethod}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="credit">Credit</SelectItem>
-                <SelectItem value="card">Card</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Time Info (read-only) */}
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Time / Created By</Label>
-            <div className="h-9 flex items-center gap-2 text-sm">
-              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-              <span>{order.time}</span>
-              <span className="text-muted-foreground">•</span>
-              <span className="text-muted-foreground truncate">{order.createdBy || "N/A"}</span>
+      {/* Cancelled Order View */}
+      {order.status === "cancelled" ? (
+        <div className="bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800 p-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/30">
+              <X className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-semibold text-red-700 dark:text-red-400 mb-1">Order Cancelled</h4>
+              <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-3">
+                This order has been cancelled and cannot be reverted.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Customer:</span>
+                  <p className="font-medium">{order.customerName || "Walk-in"}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Items:</span>
+                  <p className="font-medium">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Total:</span>
+                  <p className="font-medium">{formatCurrency(order.total)}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Payment:</span>
+                  <p className="font-medium capitalize">{order.paymentMethod}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      ) : (
+        <>
+          {/* Simple Edit Form */}
+          <div className="bg-card rounded-lg border border-border p-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+              {/* Customer Selector */}
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Customer</Label>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between h-9 text-sm font-normal"
+                  onClick={() => setIsCustomerPickerOpen(true)}
+                >
+                  <span className="flex items-center gap-2 truncate">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    {selectedCustomerName}
+                  </span>
+                </Button>
+              </div>
 
-        {/* Action Buttons */}
-        {hasChanges && (
-          <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleCancelChanges}
-              disabled={isLoading}
-            >
-              <X className="h-3.5 w-3.5 mr-1" />
-              Cancel
-            </Button>
-            <Button 
-              size="sm" 
-              onClick={handleSaveChanges}
-              disabled={isLoading}
-            >
-              <Save className="h-3.5 w-3.5 mr-1" />
-              Save Changes
-            </Button>
-          </div>
-        )}
-      </div>
+              {/* Status Selector */}
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Status</Label>
+                <Select value={editedStatus} onValueChange={setEditedStatus}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="completed">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-500" />
+                        Completed
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="pending">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                        Pending
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="cancelled">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-red-500" />
+                        Cancelled
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-      {/* Order Summary & Items Toggle */}
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
-        <div 
-          className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors"
-          onClick={() => setShowItemsTable(!showItemsTable)}
-        >
-          <div className="flex items-center gap-4">
-            <h4 className="text-sm font-semibold text-foreground">
-              Order Items ({order.items.length})
-            </h4>
-            <div className="text-sm text-muted-foreground">
-              Subtotal: <span className="font-semibold text-foreground">{formatCurrency(order.subtotal)}</span>
-              <span className="mx-2">•</span>
-              Total: <span className="font-bold text-primary">{formatCurrency(order.total)}</span>
+              {/* Payment Method Selector */}
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Payment Method</Label>
+                <Select value={editedPaymentMethod} onValueChange={setEditedPaymentMethod}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="credit">Credit</SelectItem>
+                    <SelectItem value="card">Card</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Return Button with Dropdown */}
+              <div className="flex items-center gap-2">
+                {!isReturning ? (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => setIsReturning(true)}
+                    className="h-9 flex-1"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                    Return
+                  </Button>
+                ) : (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => {
+                      setIsReturning(false);
+                      setReturnQuantities({});
+                      setReturnNotes("");
+                    }}
+                    className="h-9 flex-1 border-orange-300 text-orange-700 dark:text-orange-400"
+                  >
+                    <X className="h-3.5 w-3.5 mr-1.5" />
+                    Cancel Return
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-9 px-2"
+                  onClick={() => setShowItemsTable(!showItemsTable)}
+                >
+                  {showItemsTable ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {!isReturning && (
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsReturning(true);
-                  setShowItemsTable(true);
-                }} 
-                className="h-7"
-              >
-                <RotateCcw className="h-3 w-3 mr-1" />
-                Return
-              </Button>
+
+            {/* Action Buttons */}
+            {hasChanges && (
+              <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleCancelChanges}
+                  disabled={isLoading}
+                >
+                  <X className="h-3.5 w-3.5 mr-1" />
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={handleSaveChanges}
+                  disabled={isLoading}
+                >
+                  <Save className="h-3.5 w-3.5 mr-1" />
+                  Save Changes
+                </Button>
+              </div>
             )}
-            {showItemsTable ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            )}
           </div>
-        </div>
 
-        {/* Return Mode Header */}
-        {isReturning && showItemsTable && (
-          <div className="px-4 py-2 bg-orange-50 dark:bg-orange-950/20 border-y border-orange-200 dark:border-orange-800 flex items-center justify-between">
-            <div className="text-sm">
-              <span className="text-orange-700 dark:text-orange-400 font-medium">Return Mode</span>
-              <span className="text-muted-foreground mx-2">•</span>
-              Refund: <span className="font-semibold">{formatCurrency(computedRefund)}</span>
-              <span className="mx-2">•</span>
-              New Total: <span className="font-bold text-primary">{formatCurrency(newTotal)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button size="sm" onClick={handleReturn} disabled={isLoading || computedRefund <= 0} className="h-7">
-                <Save className="h-3 w-3 mr-1" />
-                Process Return
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => {
-                setIsReturning(false);
-                setReturnQuantities({});
-                setReturnNotes("");
-              }} disabled={isLoading} className="h-7">
-                <X className="h-3 w-3 mr-1" />
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
+          {/* Return Mode - Expanded Content */}
+          {isReturning && (
+            <div className="mt-4 bg-card rounded-lg border border-orange-200 dark:border-orange-800 overflow-hidden">
+              <div className="px-4 py-2 bg-orange-50 dark:bg-orange-950/20 border-b border-orange-200 dark:border-orange-800 flex items-center justify-between">
+                <div className="text-sm">
+                  <span className="text-orange-700 dark:text-orange-400 font-medium">Return Mode</span>
+                  <span className="text-muted-foreground mx-2">•</span>
+                  Refund: <span className="font-semibold">{formatCurrency(computedRefund)}</span>
+                  <span className="mx-2">•</span>
+                  New Total: <span className="font-bold text-primary">{formatCurrency(newTotal)}</span>
+                </div>
+                <Button size="sm" onClick={handleReturn} disabled={isLoading || computedRefund <= 0} className="h-7">
+                  <Save className="h-3 w-3 mr-1" />
+                  Process Return
+                </Button>
+              </div>
 
-        {/* Items Table */}
-        {showItemsTable && (
-          <>
-            {isReturning && (
-              <div className="px-4 py-3 border-b border-border">
+              {/* Return Notes */}
+              <div className="px-4 py-3 border-b border-orange-200 dark:border-orange-800">
                 <Label className="text-xs">Return Notes (Optional)</Label>
                 <Textarea
                   value={returnNotes}
@@ -463,42 +475,39 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
                   className="mt-1 text-sm min-h-[60px]"
                 />
               </div>
-            )}
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr className="text-xs">
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground w-12">#</th>
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Product Name</th>
-                    <th className="px-3 py-2 text-center font-medium text-muted-foreground w-20">Qty</th>
-                    <th className="px-3 py-2 text-right font-medium text-muted-foreground w-28">Unit Price</th>
-                    <th className="px-3 py-2 text-right font-medium text-muted-foreground w-32">Total</th>
-                    {isReturning && (
+              
+              {/* Items Table for Return */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr className="text-xs">
+                      <th className="px-3 py-2 text-left font-medium text-muted-foreground w-12">#</th>
+                      <th className="px-3 py-2 text-left font-medium text-muted-foreground">Product Name</th>
+                      <th className="px-3 py-2 text-center font-medium text-muted-foreground w-20">Qty</th>
+                      <th className="px-3 py-2 text-right font-medium text-muted-foreground w-28">Unit Price</th>
+                      <th className="px-3 py-2 text-right font-medium text-muted-foreground w-32">Total</th>
                       <th className="px-3 py-2 text-center font-medium text-muted-foreground w-24">Return Qty</th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border bg-card">
-                  {order.items.map((item, index) => (
-                    <tr key={index} className="hover:bg-muted/20 transition-colors text-sm">
-                      <td className="px-3 py-2 text-muted-foreground">{index + 1}</td>
-                      <td className="px-3 py-2">
-                        <div>
-                          <p className="font-medium text-foreground">{item.productName}</p>
-                          <p className="text-xs text-muted-foreground">ID: {item.productId}</p>
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 text-center">
-                        <Badge variant="secondary" className="text-xs">{item.quantity}</Badge>
-                      </td>
-                      <td className="px-3 py-2 text-right text-muted-foreground">
-                        Rs. {item.unitPrice.toLocaleString()}
-                      </td>
-                      <td className="px-3 py-2 text-right font-semibold text-primary">
-                        Rs. {item.total.toLocaleString()}
-                      </td>
-                      {isReturning && (
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border bg-card">
+                    {order.items.map((item, index) => (
+                      <tr key={index} className="hover:bg-muted/20 transition-colors text-sm">
+                        <td className="px-3 py-2 text-muted-foreground">{index + 1}</td>
+                        <td className="px-3 py-2">
+                          <div>
+                            <p className="font-medium text-foreground">{item.productName}</p>
+                            <p className="text-xs text-muted-foreground">ID: {item.productId}</p>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-center">
+                          <Badge variant="secondary" className="text-xs">{item.quantity}</Badge>
+                        </td>
+                        <td className="px-3 py-2 text-right text-muted-foreground">
+                          Rs. {item.unitPrice.toLocaleString()}
+                        </td>
+                        <td className="px-3 py-2 text-right font-semibold text-primary">
+                          Rs. {item.total.toLocaleString()}
+                        </td>
                         <td className="px-3 py-2">
                           <Input
                             type="number"
@@ -517,15 +526,61 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
                             className="w-20 h-7 text-center text-xs mx-auto"
                           />
                         </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </>
-        )}
-      </div>
+          )}
+
+          {/* View Items Table (non-return mode) */}
+          {showItemsTable && !isReturning && (
+            <div className="mt-4 bg-card rounded-lg border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr className="text-xs">
+                      <th className="px-3 py-2 text-left font-medium text-muted-foreground w-12">#</th>
+                      <th className="px-3 py-2 text-left font-medium text-muted-foreground">Product Name</th>
+                      <th className="px-3 py-2 text-center font-medium text-muted-foreground w-20">Qty</th>
+                      <th className="px-3 py-2 text-right font-medium text-muted-foreground w-28">Unit Price</th>
+                      <th className="px-3 py-2 text-right font-medium text-muted-foreground w-32">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border bg-card">
+                    {order.items.map((item, index) => (
+                      <tr key={index} className="hover:bg-muted/20 transition-colors text-sm">
+                        <td className="px-3 py-2 text-muted-foreground">{index + 1}</td>
+                        <td className="px-3 py-2">
+                          <div>
+                            <p className="font-medium text-foreground">{item.productName}</p>
+                            <p className="text-xs text-muted-foreground">ID: {item.productId}</p>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-center">
+                          <Badge variant="secondary" className="text-xs">{item.quantity}</Badge>
+                        </td>
+                        <td className="px-3 py-2 text-right text-muted-foreground">
+                          Rs. {item.unitPrice.toLocaleString()}
+                        </td>
+                        <td className="px-3 py-2 text-right font-semibold text-primary">
+                          Rs. {item.total.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-4 py-2 bg-muted/30 border-t border-border flex justify-end gap-4 text-sm">
+                <span className="text-muted-foreground">Subtotal: <span className="font-semibold text-foreground">{formatCurrency(order.subtotal)}</span></span>
+                {order.discount > 0 && <span className="text-muted-foreground">Discount: <span className="font-semibold text-red-600">-{formatCurrency(order.discount)}</span></span>}
+                <span className="text-muted-foreground">Total: <span className="font-bold text-primary">{formatCurrency(order.total)}</span></span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Outsourced Items */}
       {order.outsourcedItems && order.outsourcedItems.length > 0 && (
