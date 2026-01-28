@@ -116,9 +116,15 @@ export const OrdersTable = ({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-sm">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        {new Date(order.date).toLocaleDateString()}
+                        {(() => {
+                          const d = new Date(order.createdAt || order.date);
+                          const day = d.getDate();
+                          const month = d.toLocaleDateString('en-US', { month: 'short' });
+                          const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                          return `${day} ${month}, ${time}`;
+                        })()}
                       </div>
                     </TableCell>
                     <TableCell>

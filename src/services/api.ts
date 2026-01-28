@@ -381,11 +381,18 @@ export const salesApi = {
       body: JSON.stringify(adjustment),
     }),
 
-  updateDetails: (id: number, details: { paymentMethod?: string; customerId?: number | null; customerName?: string }) =>
-    apiRequest<ApiResponse<any>>(`/sales/${id}/details`, {
+  updateDetails: (id: number, details: { paymentMethod?: string; customerId?: number | null; customerName?: string }) => {
+    // Convert to snake_case for backend
+    const payload: any = {};
+    if (details.paymentMethod !== undefined) payload.payment_method = details.paymentMethod;
+    if (details.customerId !== undefined) payload.customer_id = details.customerId;
+    if (details.customerName !== undefined) payload.customer_name = details.customerName;
+    
+    return apiRequest<ApiResponse<any>>(`/sales/${id}/details`, {
       method: 'PUT',
-      body: JSON.stringify(details),
-    }),
+      body: JSON.stringify(payload),
+    });
+  },
 
   generatePDF: (id: number) => 
     apiRequest<Blob>(`/sales/${id}/pdf`, {
