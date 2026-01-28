@@ -381,6 +381,12 @@ export const salesApi = {
       body: JSON.stringify(adjustment),
     }),
 
+  updateDetails: (id: number, details: { paymentMethod?: string; customerId?: number | null; customerName?: string }) =>
+    apiRequest<ApiResponse<any>>(`/sales/${id}/details`, {
+      method: 'PUT',
+      body: JSON.stringify(details),
+    }),
+
   generatePDF: (id: number) => 
     apiRequest<Blob>(`/sales/${id}/pdf`, {
       headers: {

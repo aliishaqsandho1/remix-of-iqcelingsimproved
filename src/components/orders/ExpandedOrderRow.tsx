@@ -203,13 +203,9 @@ export const ExpandedOrderRow = ({ order, onOrderUpdated }: ExpandedOrderRowProp
           updatePayload.customerName = selectedCustomerName;
         }
 
-        const response = await fetch(`/api/sales/${order.id}/details`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatePayload)
-        });
+        const response = await salesApi.updateDetails(order.id, updatePayload);
         
-        if (!response.ok) throw new Error('Failed to update order details');
+        if (!response.success) throw new Error('Failed to update order details');
       }
       
       toast({
